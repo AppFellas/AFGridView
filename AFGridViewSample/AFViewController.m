@@ -7,8 +7,11 @@
 //
 
 #import "AFViewController.h"
+#import "AFGridView.h"
 
 @interface AFViewController ()
+
+@property (strong, nonatomic) AFGridView *gridView;
 
 @end
 
@@ -18,6 +21,11 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    self.gridView = [AFGridView new];
+    _gridView.frame = self.view.bounds;
+    
+    [self.view addSubview:_gridView];
 }
 
 - (void)didReceiveMemoryWarning
