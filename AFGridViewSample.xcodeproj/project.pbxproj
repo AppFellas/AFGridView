@@ -18,6 +18,7 @@
 		FABAE9CB16242F0300E8F4AE /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FABAE9CA16242F0300E8F4AE /* Default-568h@2x.png */; };
 		FABAE9CE16242F0300E8F4AE /* AFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FABAE9CD16242F0300E8F4AE /* AFViewController.m */; };
 		FABAE9D116242F0300E8F4AE /* AFViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FABAE9CF16242F0300E8F4AE /* AFViewController.xib */; };
+		FAE8D6F71624321E002D7563 /* AFGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE8D6F61624321E002D7563 /* AFGridView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,8 @@
 		FABAE9CC16242F0300E8F4AE /* AFViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AFViewController.h; sourceTree = "<group>"; };
 		FABAE9CD16242F0300E8F4AE /* AFViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AFViewController.m; sourceTree = "<group>"; };
 		FABAE9D016242F0300E8F4AE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/AFViewController.xib; sourceTree = "<group>"; };
+		FAE8D6F51624321E002D7563 /* AFGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFGridView.h; path = AFGridView/AFGridView.h; sourceTree = "<group>"; };
+		FAE8D6F61624321E002D7563 /* AFGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFGridView.m; path = AFGridView/AFGridView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +59,7 @@
 		FABAE9A516242F0300E8F4AE = {
 			isa = PBXGroup;
 			children = (
+				FAE8D6F3162431F5002D7563 /* AFGridView */,
 				FABAE9BA16242F0300E8F4AE /* AFGridViewSample */,
 				FABAE9B316242F0300E8F4AE /* Frameworks */,
 				FABAE9B116242F0300E8F4AE /* Products */,
@@ -105,6 +109,15 @@
 				FABAE9CA16242F0300E8F4AE /* Default-568h@2x.png */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		FAE8D6F3162431F5002D7563 /* AFGridView */ = {
+			isa = PBXGroup;
+			children = (
+				FAE8D6F51624321E002D7563 /* AFGridView.h */,
+				FAE8D6F61624321E002D7563 /* AFGridView.m */,
+			);
+			name = AFGridView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -177,6 +190,7 @@
 				FABAE9C116242F0300E8F4AE /* main.m in Sources */,
 				FABAE9C516242F0300E8F4AE /* AFAppDelegate.m in Sources */,
 				FABAE9CE16242F0300E8F4AE /* AFViewController.m in Sources */,
+				FAE8D6F71624321E002D7563 /* AFGridView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -295,6 +309,7 @@
 				FABAE9D616242F0300E8F4AE /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
