@@ -8,6 +8,7 @@
 
 #import "AFViewController.h"
 #import "AFGridView.h"
+#import "AFInfiniteScrollView.h"
 
 @interface AFViewController ()
 
@@ -26,6 +27,8 @@
     _gridView.frame = self.view.bounds;
     
     [self.view addSubview:_gridView];
+    
+    [self.view addSubview:[[AFInfiniteScrollView alloc] initWithFrame:self.view.bounds]];
 }
 
 - (void)didReceiveMemoryWarning
