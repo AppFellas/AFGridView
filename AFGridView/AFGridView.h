@@ -13,7 +13,9 @@
 
 @interface AFGridView : UIView
 
-@property (nonatomic, weak) id<AFGridViewDataSource> dateSource;
+@property (nonatomic, strong) UIScrollView *scrollView;
+
+@property (nonatomic, weak) id<AFGridViewDataSource> dataSource;
 @property (nonatomic, weak) id<AFGridViewDelegate> delegate;
 
 @end
@@ -23,12 +25,11 @@
 
 - (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView;
 - (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView;
-- (UIView *)nextViewForGridView:(AFGridView *)gridView;
+- (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index;
 
 @end
 
 @protocol AFGridViewDelegate <NSObject>
-
+@optional
 - (void)gridView:(AFGridView *)gridView didSelectCellAtIndex:(NSInteger)index;
-
 @end
