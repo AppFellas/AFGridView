@@ -10,11 +10,15 @@
 
 #define FAKE_LENGTH 5000
 
-@interface AFInfiniteScrollView()
+@interface AFInfiniteScrollView()<AFInfiniteScrollViewDataSource>
 @property (nonatomic, strong) NSMutableArray *visibleCells;
 @property (nonatomic, strong) UIView *cellContainerView;
 
 - (void)tileCellsFromMinX:(CGFloat)minimumVisibleX toMaxX:(CGFloat)maximumVisibleX;
+
+//delete after testing
+@property (nonatomic, strong) NSMutableArray *array;
+@property (nonatomic, assign) NSInteger currentIndex;
 
 @end
 
@@ -24,6 +28,11 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
+        //testing
+        self.array = @[@"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"10"].mutableCopy;
+        self.currentIndex = -1;
+        self.dataSource = self;
+        
         // Initialization code
         self.contentSize = CGSizeMake(FAKE_LENGTH, frame.size.height);
         
@@ -68,7 +77,7 @@
     
     // tile content in visible bounds
     CGRect visibleBounds = [self convertRect:[self bounds] toView:_cellContainerView];
-    CGFloat minimumVisibleX = CGRectGetMinX(visibleBounds);
+    CGFloat minimumVisibleX = CGRectGetMinX(visibleBounds) - (int)([self.dataSource cellPaddingInScrollView:self] / 2);
     CGFloat maximumVisibleX = CGRectGetMaxX(visibleBounds);
     
     [self tileCellsFromMinX:minimumVisibleX toMaxX:maximumVisibleX];
@@ -76,38 +85,62 @@
 
 #pragma mark - Cell Tiling
 
-- (UILabel *)insertCell {
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 200, 80)];
+- (UIView *)getViewByIndex:(NSInteger)index
+{
+    CGRect labelRect;
+    labelRect.origin.x = labelRect.origin.y = 0;
+    labelRect.size = [self.dataSource sizeForCellInScrollView:self];
+    UILabel *label = [[UILabel alloc] initWithFrame:labelRect];
+    label.tag = index;
+    label.backgroundColor = [UIColor redColor];
     [label setNumberOfLines:3];
-    [label setText:@"1024 Block Street\nShaffer, CA\n95014"];
+    [label setText:[NSString stringWithFormat:@"%@ Block Street\nShaffer, CA\n95014", _array[index]]];
     [_cellContainerView addSubview:label];
     
     return label;
 }
 
+- (UIView *)getNextCell {
+    NSInteger nextCellIndex = 0;
+    if (_visibleCells.count) {
+        UIView *cellView = [_visibleCells lastObject];
+        nextCellIndex = (cellView.tag + 1) % _array.count;
+    }
+    return [self getViewByIndex:nextCellIndex];
+}
+
+- (UIView *)getPreviousCell
+{
+    NSInteger currentCellIndex = ((UIView *)_visibleCells[0]).tag;
+    NSInteger prevCellIndex = ((currentCellIndex - 1) >= 0) ? currentCellIndex - 1 : _array.count - 1;
+    return [self getViewByIndex:prevCellIndex];
+}
+
 - (CGFloat)placeNewCellOnRight:(CGFloat)rightEdge {
-    UILabel *label = [self insertCell];
-    [_visibleCells addObject:label]; // add rightmost label at the end of the array
+    UIView *cellView = [self getNextCell];
+    [_visibleCells addObject:cellView]; // add rightmost label at the end of the array
     
-    CGRect frame = [label frame];
-    frame.origin.x = rightEdge;
+    CGRect frame = [cellView frame];
+    frame.origin.x = rightEdge + [self.dataSource cellPaddingInScrollView:self];
     frame.origin.y = [_cellContainerView bounds].size.height - frame.size.height;
-    [label setFrame:frame];
+    [cellView setFrame:frame];
     
     return CGRectGetMaxX(frame);
 }
 
 - (CGFloat)placeNewCellOnLeft:(CGFloat)leftEdge {
-    UILabel *label = [self insertCell];
-    [_visibleCells insertObject:label atIndex:0]; // add leftmost label at the beginning of the array
+    UIView *cellView = [self getPreviousCell];
+    [_visibleCells insertObject:cellView atIndex:0]; // add leftmost label at the beginning of the array
     
-    CGRect frame = [label frame];
-    frame.origin.x = leftEdge - frame.size.width;
+    CGRect frame = [cellView frame];
+    frame.origin.x = leftEdge - frame.size.width - [self.dataSource cellPaddingInScrollView:self];
     frame.origin.y = [_cellContainerView bounds].size.height - frame.size.height;
-    [label setFrame:frame];
+    [cellView setFrame:frame];
     
     return CGRectGetMinX(frame);
 }
+
+static BOOL blockRemoving;
 
 - (void)tileCellsFromMinX:(CGFloat)minimumVisibleX toMaxX:(CGFloat)maximumVisibleX {
     // the upcoming tiling logic depends on there already being at least one label in the visibleLabels array, so
@@ -130,20 +163,22 @@
         leftEdge = [self placeNewCellOnLeft:leftEdge];
     }
     
-    // remove labels that have fallen off right edge
-    lastLabel = [_visibleCells lastObject];
-    while ([lastLabel frame].origin.x > maximumVisibleX) {
-        [lastLabel removeFromSuperview];
-        [_visibleCells removeLastObject];
+    if (!blockRemoving) {
+        // remove labels that have fallen off right edge
         lastLabel = [_visibleCells lastObject];
-    }
-    
-    // remove labels that have fallen off left edge
-    firstLabel = [_visibleCells objectAtIndex:0];
-    while (CGRectGetMaxX([firstLabel frame]) < minimumVisibleX) {
-        [firstLabel removeFromSuperview];
-        [_visibleCells removeObjectAtIndex:0];
+        while ([lastLabel frame].origin.x > maximumVisibleX) {
+            [lastLabel removeFromSuperview];
+            [_visibleCells removeLastObject];
+            lastLabel = [_visibleCells lastObject];
+        }
+        
+        // remove labels that have fallen off left edge
         firstLabel = [_visibleCells objectAtIndex:0];
+        while (CGRectGetMaxX([firstLabel frame]) < minimumVisibleX) {
+            [firstLabel removeFromSuperview];
+            [_visibleCells removeObjectAtIndex:0];
+            firstLabel = [_visibleCells objectAtIndex:0];
+        }
     }
 }
 
@@ -158,14 +193,19 @@
         CGFloat xOffset;
         
         if (fabs(cell1.frame.origin.x - self.contentOffset.x) < fabs(cell2.frame.origin.x - self.contentOffset.x)) {
-            xOffset = cell1.frame.origin.x;
+            xOffset = cell1.frame.origin.x - 1;
         } else {
-            xOffset = cell2.frame.origin.x;
+            xOffset = cell2.frame.origin.x - 1;
         }
+        
+        blockRemoving = YES;
         
         [UIView animateWithDuration:0.5
                          animations:^{
                              self.contentOffset =  CGPointMake(xOffset, self.contentOffset.y);
+                         } completion:^(BOOL finished) {
+                             blockRemoving = NO;
+                             [self layoutSubviews];
                          }];
     }
 }
@@ -178,6 +218,18 @@
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     if (!decelerate) [self recenterCells];
+}
+
+#pragma mark - Delete this section
+
+- (CGSize)sizeForCellInScrollView:(AFInfiniteScrollView *)infiniteScrollView
+{
+    return CGSizeMake(190, 80);
+}
+
+- (CGFloat)cellPaddingInScrollView:(AFInfiniteScrollView *)infiniteScrollView
+{
+    return 2;
 }
 
 @end
