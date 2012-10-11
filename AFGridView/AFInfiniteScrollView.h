@@ -27,9 +27,10 @@ typedef enum {
 
 
 @protocol AFInfiniteScrollViewDataSource <NSObject>
-//TODO: describe data source
+- (UIView *)infiniteScrollView:(AFInfiniteScrollView *)infiniteScrollView viewWithIndex:(NSInteger)index;
 - (CGSize)sizeForCellInScrollView:(AFInfiniteScrollView *)infiniteScrollView;
 - (CGFloat)cellPaddingInScrollView:(AFInfiniteScrollView *)infiniteScrollView;
+- (NSInteger)numberOfCellsInScrollView:(AFInfiniteScrollView *)infiniteScrollView;
 @end
 
 @protocol AFInfiniteScrollViewDelegate <NSObject>
