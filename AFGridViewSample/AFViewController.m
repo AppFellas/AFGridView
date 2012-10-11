@@ -15,7 +15,6 @@
 @property (strong, nonatomic) AFGridView *gridView;
 //delete after testing
 @property (nonatomic, strong) NSMutableArray *array;
-@property (nonatomic, assign) NSInteger currentIndex;
 
 @end
 
