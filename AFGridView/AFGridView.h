@@ -8,6 +8,28 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol AFGridViewDataSource;
+@protocol AFGridViewDelegate;
+
 @interface AFGridView : UIView
 
+@property (nonatomic, strong) UIScrollView *scrollView;
+
+@property (nonatomic, weak) id<AFGridViewDataSource> dataSource;
+@property (nonatomic, weak) id<AFGridViewDelegate> delegate;
+
+@end
+
+
+@protocol AFGridViewDataSource <NSObject>
+
+- (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView;
+- (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView;
+- (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index;
+
+@end
+
+@protocol AFGridViewDelegate <NSObject>
+@optional
+- (void)gridView:(AFGridView *)gridView didSelectCellAtIndex:(NSInteger)index;
 @end
