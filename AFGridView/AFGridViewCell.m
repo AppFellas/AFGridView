@@ -49,18 +49,29 @@
         location.y > self.bounds.size.height) {
         return;
     }
-    if (location.x - prevLocation.x > 0) {
-        NSLog(@"right");
+    CGFloat dx = abs(location.x - prevLocation.x);
+    CGFloat dy = abs(location.y - prevLocation.y);
+    if (dx > dy) {
+        if (location.x - prevLocation.x > 0) {
+            if (self.delegate != nil) {
+                [self.delegate gridVIewCell:self willMoveToDirection:moveRightDirection];
+            }
+        } else {
+            if (self.delegate != nil) {
+                [self.delegate gridVIewCell:self willMoveToDirection:moveLeftDirection];
+            }
+        }
     } else {
-        NSLog(@"left");
-    }
-    if (location.y - prevLocation.y > 0) {
-        NSLog(@"down");
-    } else {
-        NSLog(@"up");
-    }
-    if (self.delegate != nil) {
-        [self.delegate gridVIewCell:self willMoveToDirection:moveLeftDirection];
+        
+        if (location.y - prevLocation.y > 0) {
+            if (self.delegate != nil) {
+                [self.delegate gridVIewCell:self willMoveToDirection:moveDownDirection];
+            }
+        } else {
+            if (self.delegate != nil) {
+                [self.delegate gridVIewCell:self willMoveToDirection:moveUpDirection];
+            }
+        }
     }
 }
 
