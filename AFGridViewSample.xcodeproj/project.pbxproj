@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		45E21BF516281E2600792EA5 /* AFGridViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 45E21BF416281E2600792EA5 /* AFGridViewCell.m */; };
 		FABAE9B516242F0300E8F4AE /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FABAE9B416242F0300E8F4AE /* UIKit.framework */; };
 		FABAE9B716242F0300E8F4AE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FABAE9B616242F0300E8F4AE /* Foundation.framework */; };
 		FABAE9B916242F0300E8F4AE /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FABAE9B816242F0300E8F4AE /* CoreGraphics.framework */; };
@@ -23,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		45E21BF316281E2600792EA5 /* AFGridViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFGridViewCell.h; path = AFGridView/AFGridViewCell.h; sourceTree = "<group>"; };
+		45E21BF416281E2600792EA5 /* AFGridViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFGridViewCell.m; path = AFGridView/AFGridViewCell.m; sourceTree = "<group>"; };
 		FABAE9B016242F0300E8F4AE /* AFGridViewSample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AFGridViewSample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FABAE9B416242F0300E8F4AE /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		FABAE9B616242F0300E8F4AE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -117,6 +120,8 @@
 		FAE8D6F3162431F5002D7563 /* AFGridView */ = {
 			isa = PBXGroup;
 			children = (
+				45E21BF316281E2600792EA5 /* AFGridViewCell.h */,
+				45E21BF416281E2600792EA5 /* AFGridViewCell.m */,
 				FAE8D6F51624321E002D7563 /* AFGridView.h */,
 				FAE8D6F61624321E002D7563 /* AFGridView.m */,
 				FAE8D72C16259B25002D7563 /* AFInfiniteScrollView.h */,
@@ -197,6 +202,7 @@
 				FABAE9CE16242F0300E8F4AE /* AFViewController.m in Sources */,
 				FAE8D6F71624321E002D7563 /* AFGridView.m in Sources */,
 				FAE8D72E16259B25002D7563 /* AFInfiniteScrollView.m in Sources */,
+				45E21BF516281E2600792EA5 /* AFGridViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
