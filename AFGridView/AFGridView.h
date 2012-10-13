@@ -18,6 +18,8 @@
 @property (nonatomic, weak) id<AFGridViewDataSource> dataSource;
 @property (nonatomic, weak) id<AFGridViewDelegate> delegate;
 
+- (void)reloadGridView;
+
 @end
 
 
@@ -26,6 +28,7 @@
 - (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView;
 - (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView;
 - (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index;
+- (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView;
 
 @end
 

@@ -9,9 +9,9 @@
 #import "AFGridView.h"
 
 #define SIDE_OFFSET 1
-#define CELL_OFFSET 1
+#define CELL_OFFSET 2
 
-@interface AFGridView()<AFGridViewDelegate, AFGridViewDataSource>
+@interface AFGridView()
 
 @property (nonatomic, strong) NSMutableArray *visibleCells;
 @property (nonatomic, strong) NSMutableArray *recycledCells;
@@ -43,10 +43,6 @@
         
         self.scrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
         [self addSubview:_scrollView];
-        
-        //done for testing
-        self.delegate = self;
-        self.dataSource = self;
     }
     return self;
 }
@@ -66,28 +62,39 @@
 {
     NSInteger rowsCount = [self.dataSource numberOfRowsInGridView:self];
     NSInteger columnsCount = [self.dataSource numberOfColumnsInGridView:self];
-    return CGSizeMake((int)((self.bounds.size.width - SIDE_OFFSET * 2) / columnsCount),
-                      (int)((self.bounds.size.height - SIDE_OFFSET * 2) / rowsCount));
-    
+
+    return CGSizeMake((int)((self.bounds.size.width - SIDE_OFFSET * 2 - (CELL_OFFSET * (columnsCount - 1))) / columnsCount),
+                      (int)((self.bounds.size.height - SIDE_OFFSET * 2 - (CELL_OFFSET * (rowsCount - 1))) / rowsCount));
 }
 
 - (CGRect)frameForCellWithRow:(NSInteger)row column:(NSInteger)column
 {
     CGSize cellSize = [self sizeForCell];
-    
-    CGRect cellFrame = CGRectMake(SIDE_OFFSET * (1 + row) + cellSize.width * row,
-                                  SIDE_OFFSET * (1 + column) + cellSize.height * column,
+
+    CGRect cellFrame = CGRectMake(SIDE_OFFSET + column * CELL_OFFSET + cellSize.width * column,
+                                  SIDE_OFFSET + row * CELL_OFFSET + cellSize.height * row,
                                   cellSize.width,
                                   cellSize.height);
     
     return cellFrame;
 }
 
-- (void)reloadViews
+- (void)reloadGridView
 {
+    for (UIView *v in [self subviews]) {
+        [v removeFromSuperview];
+    }
     
-    for (int i = 0; i < [self.dataSource numberOfColumnsInGridView:self]; i++) {
-        
+    NSInteger columns = [self.dataSource numberOfColumnsInGridView:self];
+    NSInteger rows = [self.dataSource numberOfRowsInGridView:self];
+    
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < columns; j++) {
+            NSInteger index = i * columns + j;
+            UIView *cell = [self.dataSource gridView:self viewForCellAtIndex:index];
+            cell.frame = [self frameForCellWithRow:i column:j];
+            [self addSubview:cell];
+        }
     }
     
     self.scrollView.frame = [self frameForScrollView];
@@ -103,29 +110,6 @@
     UIView *recycledCell = [self.recycledCells lastObject];
     [_recycledCells removeObject:recycledCell];
     return recycledCell;
-}
-
-//testing stuff
-//AFGridViewDataSource methods
-
-- (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView
-{
-    return 4;
-}
-
-- (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView
-{
-    return 1;
-}
-
-- (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index
-{
-    UIView *cellView = [self dequeueRecycledCell];
-    if (!cellView) {
-        //cellView = [UIView alloc] initWithFrame:<#(CGRect)#>
-    }
-    
-    return cellView;
 }
 
 @end
