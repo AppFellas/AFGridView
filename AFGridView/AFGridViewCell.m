@@ -8,41 +8,33 @@
 
 #import "AFGridViewCell.h"
 
+#define MIN_DISTANCE 10
+
 @interface AFGridViewCell ()
+@property (nonatomic, assign) CGPoint initialPosition;
 @end
 
 @implementation AFGridViewCell
 
-- (id)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-    }
-    return self;
-}
-
-- (void)dealloc
-{
-    self.delegate = nil;
-}
-
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-}
-
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
-{   
-}
-
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
-{
+    if (!_delegate) return;
+    
+    if (touches.count == 1) {
+        self.initialPosition = [((UITouch *)touches.anyObject) locationInView:self];
+    } else {
+        self.initialPosition = CGPointZero;
+    }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    if (!_delegate) return;
+    
     UITouch *touch = [touches anyObject];
+    
     CGPoint location = [touch locationInView:self];
-    CGPoint prevLocation = [touch previousLocationInView:self];
+    CGPoint prevLocation = self.initialPosition;
     if (location.x < 0 ||
         location.y < 0 ||
         location.x > self.bounds.size.width ||
@@ -51,6 +43,11 @@
     }
     CGFloat dx = abs(location.x - prevLocation.x);
     CGFloat dy = abs(location.y - prevLocation.y);
+        
+    if ((dx < MIN_DISTANCE) && (dy < MIN_DISTANCE)) return;
+    
+    self.initialPosition = location;
+    
     if (dx > dy) {
         if (location.x - prevLocation.x > 0) {
             if (self.delegate != nil) {
