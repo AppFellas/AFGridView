@@ -9,8 +9,9 @@
 #import "AFViewController.h"
 #import "AFGridView.h"
 #import "AFInfiniteScrollView.h"
+#import <QuartzCore/QuartzCore.h>
 
-@interface AFViewController()<AFInfiniteScrollViewDataSource>
+@interface AFViewController()<AFInfiniteScrollViewDataSource, AFGridViewDataSource>
 
 @property (strong, nonatomic) AFGridView *gridView;
 //delete after testing
@@ -25,23 +26,35 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
+    self.array = [NSMutableArray array];
+    
+    for (int i = 0; i < 30; i++) {
+        [self.array addObject:[NSString stringWithFormat:@"%d", i + 1]];
+    }
+    
     self.gridView = [AFGridView new];
     _gridView.frame = self.view.bounds;
-    
+    _gridView.dataSource = self;
     [self.view addSubview:_gridView];
+    [_gridView reloadGridView];
     
-    self.array = @[@"1", @"2", @"3", @"4", @"5", @"6", @"7", @"8", @"9", @"10"].mutableCopy;
-    
+    /*
     AFInfiniteScrollView *infiniteScrollView = [[AFInfiniteScrollView alloc] initWithFrame:self.view.bounds];
     infiniteScrollView.dataSource = self;
     infiniteScrollView.scrollDirection = AFScrollViewDirectionHorizontal;
     [self.view addSubview:infiniteScrollView];
+     */
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
 }
 
 #pragma mark - AFInfiniteScrollViewDataSource methods
@@ -52,7 +65,9 @@
     label.tag = index;
     label.backgroundColor = [UIColor redColor];
     [label setNumberOfLines:3];
-    [label setText:[NSString stringWithFormat:@"%@ Block Street\nShaffer, CA\n95014", _array[index]]];
+    [label setText:[NSString stringWithFormat:@"%@", _array[index]]];
+    [label setFont:[UIFont boldSystemFontOfSize:30]];
+    
     return label;
 }
 
@@ -69,6 +84,35 @@
 - (NSInteger)numberOfCellsInScrollView:(AFInfiniteScrollView *)infiniteScrollView
 {
     return _array.count;
+}
+
+#pragma mark - AFGridViewDataSource methods
+
+- (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView
+{
+    return 3;
+}
+
+- (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView
+{
+    return 4;
+}
+
+- (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView
+{
+    return _array.count;
+}
+
+- (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index
+{
+    UILabel *label = [[UILabel alloc] init];
+    label.tag = index;
+    label.backgroundColor = [UIColor redColor];
+    [label setText:[NSString stringWithFormat:@"%@", _array[index]]];
+    [label setFont:[UIFont boldSystemFontOfSize:30]];
+    label.textAlignment = UITextAlignmentCenter;
+    label.layer.cornerRadius = 10;
+    return label;
 }
 
 @end
