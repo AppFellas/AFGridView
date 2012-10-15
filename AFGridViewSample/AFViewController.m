@@ -9,6 +9,7 @@
 #import "AFViewController.h"
 #import "AFGridView.h"
 #import "AFInfiniteScrollView.h"
+#import "AFGridViewCell.h"
 #import <QuartzCore/QuartzCore.h>
 
 @interface AFViewController()<AFInfiniteScrollViewDataSource, AFGridViewDataSource>
@@ -37,7 +38,7 @@
     _gridView.dataSource = self;
     [self.view addSubview:_gridView];
     [_gridView reloadGridView];
-    
+     
     /*
     AFInfiniteScrollView *infiniteScrollView = [[AFInfiniteScrollView alloc] initWithFrame:self.view.bounds];
     infiniteScrollView.dataSource = self;
@@ -103,16 +104,25 @@
     return _array.count;
 }
 
-- (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index
+- (void)gridView:(AFGridView *)gridView
+   configureCell:(AFGridViewCell *)cell
+       withIndex:(NSInteger)index
 {
-    UILabel *label = [[UILabel alloc] init];
-    label.tag = index;
-    label.backgroundColor = [UIColor redColor];
-    [label setText:[NSString stringWithFormat:@"%@", _array[index]]];
-    [label setFont:[UIFont boldSystemFontOfSize:30]];
-    label.textAlignment = UITextAlignmentCenter;
-    label.layer.cornerRadius = 10;
-    return label;
+    cell.tag = index;
+    cell.backgroundColor = [UIColor redColor];
+    [cell.textLabel setText:[NSString stringWithFormat:@"%@", _array[index]]];
+    [cell.textLabel setFont:[UIFont boldSystemFontOfSize:30]];
+    cell.textLabel.backgroundColor = [UIColor clearColor];
+    cell.textLabel.textAlignment = UITextAlignmentCenter;
+    cell.layer.cornerRadius = 10;
+}
+
+- (AFGridViewCell *)gridView:(AFGridView *)gridView
+          viewForCellAtIndex:(NSInteger)index
+{
+    AFGridViewCell *cell = [[AFGridViewCell alloc] init];
+    [self gridView:gridView configureCell:cell withIndex:index];
+    return cell;
 }
 
 @end
