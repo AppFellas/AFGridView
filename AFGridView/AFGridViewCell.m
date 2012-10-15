@@ -98,6 +98,25 @@
             }
         }
     }
+
+    if (self.scrollView) {
+        CGPoint prevCellLocation = [touch previousLocationInView:self];
+    
+        CGFloat xOffsetDiv = location.x - prevCellLocation.x;
+        CGFloat yOffsetDiv = location.y - prevCellLocation.y;
+        
+        CGPoint contentOffset = self.scrollView.contentOffset;
+        contentOffset.x += xOffsetDiv;
+        
+        //self.scrollView.contentOffset = contentOffset;
+        
+        NSDictionary *ui = @{@"xOffset" : [NSNumber numberWithFloat:xOffsetDiv],
+        @"yOffset" : [NSNumber numberWithFloat:yOffsetDiv]};
+        
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"scroll.event"
+                                                            object:nil
+                                                          userInfo:ui];
+    }
 }
 
 #pragma mark - Layouting subviews
