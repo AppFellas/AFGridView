@@ -18,6 +18,8 @@ typedef enum {
 @protocol AFGridViewCellDelegate;
 @interface AFGridViewCell : UIView
 @property (assign, nonatomic) id<AFGridViewCellDelegate> delegate;
+@property (strong, nonatomic) UILabel *textLabel;
+@property (weak, nonatomic) UIScrollView *scrollView;
 @end
 
 @protocol AFGridViewCellDelegate <NSObject>

@@ -16,6 +16,34 @@
 
 @implementation AFGridViewCell
 
+#pragma mark - Initializing
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        [self setupCell];
+    }
+    return self;
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self setupCell];
+    }
+    return self;
+}
+
+- (void)setupCell
+{
+    self.textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    [self addSubview:_textLabel];
+}
+
+#pragma mark - Handling touches
+
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     if (!_delegate) return;
@@ -70,6 +98,14 @@
             }
         }
     }
+}
+
+#pragma mark - Layouting subviews
+
+- (void)layoutSubviews
+{
+    [super layoutSubviews];
+    self.textLabel.frame = self.bounds;
 }
 
 @end
