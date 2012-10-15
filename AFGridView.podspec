@@ -6,7 +6,7 @@ Pod::Spec.new do |s|
   s.license      = 'MIT'
   s.author       = { "AppFellas" => "info@appfellas.co" }
   s.source       = { :git => "https://github.com/AppFellas/AFGridView.git" }
-  s.source_files = 'AFGridView/*.{h.m}'
+  s.source_files = 'AFGridView/*.{h,m}'
   s.platform     = :ios
   s.requires_arc = true
 end
