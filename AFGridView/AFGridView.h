@@ -8,12 +8,11 @@
 
 #import <UIKit/UIKit.h>
 
+@class AFGridViewCell;
 @protocol AFGridViewDataSource;
 @protocol AFGridViewDelegate;
 
 @interface AFGridView : UIView
-
-@property (nonatomic, strong) UIScrollView *scrollView;
 
 @property (nonatomic, weak) id<AFGridViewDataSource> dataSource;
 @property (nonatomic, weak) id<AFGridViewDelegate> delegate;
@@ -27,7 +26,14 @@
 
 - (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView;
 - (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView;
-- (UIView *)gridView:(AFGridView *)gridView viewForCellAtIndex:(NSInteger)index;
+
+- (AFGridViewCell *)gridView:(AFGridView *)gridView
+          viewForCellAtIndex:(NSInteger)index;
+
+- (void)gridView:(AFGridView *)gridView
+   configureCell:(AFGridViewCell *)cell
+       withIndex:(NSInteger)index;
+
 - (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView;
 
 @end
