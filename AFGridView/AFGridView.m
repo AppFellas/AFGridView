@@ -49,10 +49,6 @@
         self.visibleCells = [NSMutableArray new];
         self.recycledCells = [NSMutableArray new];
         _firstVisibleCellIndex = 0;
-        
-        self.scrollView = [[AFInfiniteScrollView alloc] initWithFrame:CGRectZero];
-        _scrollView.actionDelegate = self;
-        _scrollView.dataSource = self;
     }
     return self;
 }
@@ -122,6 +118,15 @@
 
 - (void)gridVIewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction
 {
+    if (self.scrollView) {
+        [self.scrollView removeFromSuperview];
+        self.scrollView = nil;
+    }
+    
+    self.scrollView = [[AFInfiniteScrollView alloc] initWithFrame:CGRectZero];
+    _scrollView.actionDelegate = self;
+    _scrollView.dataSource = self;
+    
     CGRect scrollFrame = [self frameForScrollViewFromCell:cell moveDirection:direction];
     self.scrollView.frame = scrollFrame;
     self.scrollViewCellIndexes = [self scrollViewCellIndexesFromCell:cell
@@ -134,6 +139,8 @@
     } else {
         _scrollView.scrollDirection = AFScrollViewDirectionHorizontal;
     }
+
+    cell.scrollView = _scrollView;
     
     [self addSubview:_scrollView];
     
@@ -272,6 +279,7 @@ NSInteger startedCellColumn;
     }
     
     [infiniteScrollView removeFromSuperview];
+    self.scrollView = nil;
 }
 
 @end
