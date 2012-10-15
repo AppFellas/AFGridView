@@ -315,6 +315,8 @@ static BOOL blockRemoving;
                          } completion:^(BOOL finished) {
                              blockRemoving = NO;
                              [self layoutSubviews];
+                             [self.actionDelegate infiniteScrollView:self
+                                           didStopScrollingWithCells:self.visibleCells];
                          }];
     }
 }
