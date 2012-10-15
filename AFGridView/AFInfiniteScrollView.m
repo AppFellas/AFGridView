@@ -36,8 +36,39 @@
         [self setShowsVerticalScrollIndicator:NO];
         
         self.delegate = self;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(scrollCellHandler:)
+                                                     name:@"scroll.event"
+                                                   object:nil];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)scrollCellHandler:(NSNotification *)notitication
+{
+    NSDictionary *ui = [notitication userInfo];
+    
+    CGPoint offsetPoint = self.contentOffset;
+    
+    NSLog(@"initial offset x: %f", offsetPoint.x);
+    
+    if (self.scrollDirection == AFScrollViewDirectionHorizontal) {
+        CGFloat dx = [[ui objectForKey:@"xOffset"] floatValue];
+        offsetPoint.x -= dx;
+        NSLog(@"dx = %f", dx);
+    } else {
+        CGFloat dy = [[ui objectForKey:@"yOffset"] floatValue];
+        offsetPoint.y += dy;
+    }
+    
+    [self setContentOffset:offsetPoint animated:YES];
+    self.contentOffset = offsetPoint;
 }
 
 - (void)setScrollDirection:(AFScrollViewDirection)scrollDirection
@@ -94,7 +125,6 @@
     // tile content in visible bounds
     CGRect visibleBounds = [self convertRect:[self bounds] toView:_cellContainerView];
 
-    
     if (_scrollDirection == AFScrollViewDirectionHorizontal) {
         CGFloat minimumVisibleX = CGRectGetMinX(visibleBounds) - (int)([self.dataSource cellPaddingInScrollView:self] / 2);
         CGFloat maximumVisibleX = CGRectGetMaxX(visibleBounds);
@@ -329,6 +359,11 @@ static BOOL blockRemoving;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     if (!decelerate) [self recenterCells];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    NSLog(@"%@", touches);
 }
 
 @end
