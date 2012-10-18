@@ -23,5 +23,5 @@ typedef enum {
 @end
 
 @protocol AFGridViewCellDelegate <NSObject>
-- (void)gridVIewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction;
+- (void)gridViewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction;
 @end

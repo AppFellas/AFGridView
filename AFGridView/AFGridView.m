@@ -116,7 +116,7 @@
 
 #pragma mark - AFGridViewCellDelegate methods
 
-- (void)gridVIewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction
+- (void)gridViewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction
 {
     if (self.scrollView) {
         [self.scrollView removeFromSuperview];

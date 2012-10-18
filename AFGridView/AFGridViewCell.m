@@ -79,22 +79,22 @@
     if (dx > dy) {
         if (location.x - prevLocation.x > 0) {
             if (self.delegate != nil) {
-                [self.delegate gridVIewCell:self willMoveToDirection:moveRightDirection];
+                [self.delegate gridViewCell:self willMoveToDirection:moveRightDirection];
             }
         } else {
             if (self.delegate != nil) {
-                [self.delegate gridVIewCell:self willMoveToDirection:moveLeftDirection];
+                [self.delegate gridViewCell:self willMoveToDirection:moveLeftDirection];
             }
         }
     } else {
         
         if (location.y - prevLocation.y > 0) {
             if (self.delegate != nil) {
-                [self.delegate gridVIewCell:self willMoveToDirection:moveDownDirection];
+                [self.delegate gridViewCell:self willMoveToDirection:moveDownDirection];
             }
         } else {
             if (self.delegate != nil) {
-                [self.delegate gridVIewCell:self willMoveToDirection:moveUpDirection];
+                [self.delegate gridViewCell:self willMoveToDirection:moveUpDirection];
             }
         }
     }
