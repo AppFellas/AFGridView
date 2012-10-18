@@ -23,6 +23,8 @@
     self = [super init];
     if (self) {
         [self setupCell];
+        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+        [self addGestureRecognizer:tapRecognizer];
     }
     return self;
 }
@@ -116,6 +118,13 @@
         [[NSNotificationCenter defaultCenter] postNotificationName:@"scroll.event"
                                                             object:nil
                                                           userInfo:ui];
+    }
+}
+
+- (void)tapAction
+{
+    if (self.tapDelegate && [_tapDelegate respondsToSelector:@selector(gridViewCellDidTap:)]) {
+        [_tapDelegate gridViewCellDidTap:self];
     }
 }
 
