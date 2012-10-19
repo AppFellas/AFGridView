@@ -23,6 +23,8 @@
     self = [super init];
     if (self) {
         [self setupCell];
+        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
+        [self addGestureRecognizer:tapRecognizer];
     }
     return self;
 }
@@ -90,18 +92,17 @@
         } else {
             if (self.delegate != nil) {
                 [self.delegate gridVIewCell:self willMoveToDirection:moveLeftDirection];
-                
             }
         }
     } else {
         
         if (location.y - prevLocation.y > 0) {
             if (self.delegate != nil) {
-                [self.delegate gridVIewCell:self willMoveToDirection:moveDownDirection];
+                [self.delegate gridViewCell:self willMoveToDirection:moveDownDirection];
             }
         } else {
             if (self.delegate != nil) {
-                [self.delegate gridVIewCell:self willMoveToDirection:moveUpDirection];
+                [self.delegate gridViewCell:self willMoveToDirection:moveUpDirection];
             }
         }
     }
@@ -126,8 +127,11 @@
     }
 }
 
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+- (void)tapAction
 {
+    if (self.tapDelegate && [_tapDelegate respondsToSelector:@selector(gridViewCellDidTap:)]) {
+        [_tapDelegate gridViewCellDidTap:self];
+    }
 }
 
 #pragma mark - Layouting subviews

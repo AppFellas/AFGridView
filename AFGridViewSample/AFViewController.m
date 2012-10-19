@@ -12,7 +12,7 @@
 #import "AFGridViewCell.h"
 #import <QuartzCore/QuartzCore.h>
 
-@interface AFViewController()<AFInfiniteScrollViewDataSource, AFGridViewDataSource>
+@interface AFViewController()<AFInfiniteScrollViewDataSource, AFGridViewDataSource, AFGridViewCellTapDelegate>
 
 @property (strong, nonatomic) AFGridView *gridView;
 //delete after testing
@@ -121,8 +121,20 @@
           viewForCellAtIndex:(NSInteger)index
 {
     AFGridViewCell *cell = [[AFGridViewCell alloc] init];
+    cell.tapDelegate = self;
     [self gridView:gridView configureCell:cell withIndex:index];
     return cell;
+}
+
+#pragma mark - AFGridViewCellTapDelegate methods
+
+- (void)gridViewCellDidTap:(AFGridViewCell *)cell
+{
+    [[[UIAlertView alloc] initWithTitle:@"Message"
+                                message:[NSString stringWithFormat:@"%d tapped.", cell.tag + 1]
+                               delegate:nil
+                      cancelButtonTitle:@"OK"
+                      otherButtonTitles:nil] show];
 }
 
 @end

@@ -16,12 +16,19 @@ typedef enum {
 } eAFGridViewMoveDirection;
 
 @protocol AFGridViewCellDelegate;
+@protocol AFGridViewCellTapDelegate;
+
 @interface AFGridViewCell : UIView
 @property (assign, nonatomic) id<AFGridViewCellDelegate> delegate;
+@property (assign, nonatomic) id<AFGridViewCellTapDelegate> tapDelegate;
 @property (strong, nonatomic) UILabel *textLabel;
 @property (weak, nonatomic) UIScrollView *scrollView;
 @end
 
 @protocol AFGridViewCellDelegate <NSObject>
-- (void)gridVIewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction;
+- (void)gridViewCell:(AFGridViewCell *)cell willMoveToDirection:(eAFGridViewMoveDirection)direction;
+@end
+
+@protocol AFGridViewCellTapDelegate <NSObject>
+- (void)gridViewCellDidTap:(AFGridViewCell *)cell;
 @end
