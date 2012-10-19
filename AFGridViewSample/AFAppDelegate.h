@@ -13,6 +13,7 @@
 @interface AFAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property (assign, nonatomic) CGFloat dt;
 
 @property (strong, nonatomic) AFViewController *viewController;
 

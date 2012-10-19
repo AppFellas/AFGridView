@@ -63,12 +63,12 @@
     
     CGPoint location = [touch locationInView:self];
     CGPoint prevLocation = self.initialPosition;
-    if (location.x < 0 ||
-        location.y < 0 ||
-        location.x > self.bounds.size.width ||
-        location.y > self.bounds.size.height) {
-        return;
-    }
+//    if (location.x < 0 ||
+//        location.y < 0 ||
+//        location.x > self.bounds.size.width ||
+//        location.y > self.bounds.size.height) {
+//        return;
+//    }
     CGFloat dx = abs(location.x - prevLocation.x);
     CGFloat dy = abs(location.y - prevLocation.y);
         
@@ -80,10 +80,17 @@
         if (location.x - prevLocation.x > 0) {
             if (self.delegate != nil) {
                 [self.delegate gridVIewCell:self willMoveToDirection:moveRightDirection];
+                if ([self.scrollView pointInside:[self convertPoint:location
+                                                             toView:self.scrollView]
+                                       withEvent:event])
+                {
+                    [self.scrollView touchesMoved:touches withEvent:event];
+                }
             }
         } else {
             if (self.delegate != nil) {
                 [self.delegate gridVIewCell:self willMoveToDirection:moveLeftDirection];
+                
             }
         }
     } else {
@@ -119,6 +126,10 @@
     }
 }
 
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+}
+
 #pragma mark - Layouting subviews
 
 - (void)layoutSubviews
@@ -126,5 +137,6 @@
     [super layoutSubviews];
     self.textLabel.frame = self.bounds;
 }
+
 
 @end

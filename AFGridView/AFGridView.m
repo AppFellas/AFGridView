@@ -13,7 +13,9 @@
 #define SIDE_OFFSET 1
 #define CELL_OFFSET 2
 
-@interface AFGridView()<AFGridViewCellDelegate, AFInfiniteScrollViewDataSource, AFInfiniteScrollViewDelegate>
+@interface AFGridView() <AFGridViewCellDelegate,
+                        AFInfiniteScrollViewDataSource,
+                        AFInfiniteScrollViewDelegate>
 
 @property (nonatomic, strong) AFInfiniteScrollView *scrollView;
 @property (nonatomic, strong) NSMutableArray *visibleCells;
@@ -22,6 +24,7 @@
 @property (nonatomic, strong) NSMutableArray *visibleCellIndexes;
 
 @property (nonatomic, strong) NSMutableArray *testDataSource;
+@property (nonatomic, assign) eAFGridViewMoveDirection prevDirection;
 
 #pragma mark - ScrollView stuff
 
@@ -122,8 +125,8 @@
         [self.scrollView removeFromSuperview];
         self.scrollView = nil;
     }
-    
     self.scrollView = [[AFInfiniteScrollView alloc] initWithFrame:CGRectZero];
+    self.prevDirection = direction;
     _scrollView.actionDelegate = self;
     _scrollView.dataSource = self;
     
@@ -143,7 +146,6 @@
     cell.scrollView = _scrollView;
     
     [self addSubview:_scrollView];
-    
     cell.scrollView = self.scrollView;
 }
 

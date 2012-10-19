@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 AppFellas. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 typedef enum {
     AFScrollViewDirectionVertical,
     AFScrollViewDirectionHorizontal
@@ -16,11 +14,10 @@ typedef enum {
 @protocol AFInfiniteScrollViewDataSource;
 @protocol AFInfiniteScrollViewDelegate;
 
-@interface AFInfiniteScrollView : UIScrollView<UIScrollViewDelegate>
+@interface AFInfiniteScrollView : UIScrollView <UIScrollViewDelegate>
 
 @property (nonatomic, weak) id<AFInfiniteScrollViewDataSource> dataSource;
 @property (nonatomic, weak) id<AFInfiniteScrollViewDelegate> actionDelegate;
-
 @property (nonatomic, assign) AFScrollViewDirection scrollDirection;
 
 @end

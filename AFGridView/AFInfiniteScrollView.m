@@ -7,10 +7,13 @@
 //
 
 #import "AFInfiniteScrollView.h"
+#import "AFAppDelegate.h"
 
 #define FAKE_LENGTH 5000
 
-@interface AFInfiniteScrollView()
+@interface AFInfiniteScrollView() {
+    CGFloat _dt;
+}
 @property (nonatomic, strong) NSMutableArray *visibleCells;
 @property (nonatomic, strong) UIView *cellContainerView;
 @end
@@ -22,6 +25,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
+        _dt = 0;
         self.scrollDirection = AFScrollViewDirectionVertical;
         
         self.visibleCells = [NSMutableArray new];
@@ -30,46 +34,46 @@
         _cellContainerView.frame = CGRectMake(0, 0, self.contentSize.width, self.contentSize.height);
         
         [self addSubview:_cellContainerView];
-        [_cellContainerView setUserInteractionEnabled:NO];
+        [_cellContainerView setUserInteractionEnabled:YES];
         
         [self setShowsHorizontalScrollIndicator:NO];
         [self setShowsVerticalScrollIndicator:NO];
         
         self.delegate = self;
         
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(scrollCellHandler:)
-                                                     name:@"scroll.event"
-                                                   object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self
+//                                                 selector:@selector(scrollCellHandler:)
+//                                                     name:@"scroll.event"
+//                                                   object:nil];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+//    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)scrollCellHandler:(NSNotification *)notitication
-{
-    NSDictionary *ui = [notitication userInfo];
-    
-    CGPoint offsetPoint = self.contentOffset;
-    
-    NSLog(@"initial offset x: %f", offsetPoint.x);
-    
-    if (self.scrollDirection == AFScrollViewDirectionHorizontal) {
-        CGFloat dx = [[ui objectForKey:@"xOffset"] floatValue];
-        offsetPoint.x -= dx;
-        NSLog(@"dx = %f", dx);
-    } else {
-        CGFloat dy = [[ui objectForKey:@"yOffset"] floatValue];
-        offsetPoint.y += dy;
-    }
-    
-    [self setContentOffset:offsetPoint animated:YES];
-    self.contentOffset = offsetPoint;
-}
+//- (void)scrollCellHandler:(NSNotification *)notitication
+//{
+//    NSDictionary *ui = [notitication userInfo];
+//    
+//    CGPoint offsetPoint = self.contentOffset;
+//    
+//    NSLog(@"initial offset x: %f", offsetPoint.x);
+//    
+//    if (self.scrollDirection == AFScrollViewDirectionHorizontal) {
+//        CGFloat dx = [[ui objectForKey:@"xOffset"] floatValue];
+//        offsetPoint.x -= dx;
+//        NSLog(@"dx = %f", dx);
+//    } else {
+//        CGFloat dy = [[ui objectForKey:@"yOffset"] floatValue];
+//        offsetPoint.y += dy;
+//    }
+//    
+//    [self setContentOffset:offsetPoint animated:YES];
+//    self.contentOffset = offsetPoint;
+//}
 
 - (void)setScrollDirection:(AFScrollViewDirection)scrollDirection
 {
@@ -363,7 +367,18 @@ static BOOL blockRemoving;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    NSLog(@"%@", touches);
+    AFAppDelegate *delegate = (AFAppDelegate *)[[UIApplication sharedApplication] delegate];
+    UITouch *touch = [touches anyObject];
+    CGFloat td = delegate.dt;
+    CGPoint location = [touch locationInView:self];
+    CGPoint prevLocation = [touch previousLocationInView:self];
+    CGFloat dtt = abs(location.x - prevLocation.x);
+    CGPoint newOffset = self.contentOffset;
+    td = td + dtt;
+    delegate.dt = td;
+    newOffset.x += td;
+    NSLog(@"%@ - %f - %f", NSStringFromCGPoint(self.contentOffset), dtt, td);
+    [self setContentOffset:newOffset animated:YES];
 }
 
 @end
