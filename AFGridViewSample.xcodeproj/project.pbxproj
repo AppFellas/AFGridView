@@ -20,7 +20,6 @@
 		FABAE9CE16242F0300E8F4AE /* AFViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FABAE9CD16242F0300E8F4AE /* AFViewController.m */; };
 		FABAE9D116242F0300E8F4AE /* AFViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FABAE9CF16242F0300E8F4AE /* AFViewController.xib */; };
 		FAE8D6F71624321E002D7563 /* AFGridView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE8D6F61624321E002D7563 /* AFGridView.m */; };
-		FAE8D72E16259B25002D7563 /* AFInfiniteScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = FAE8D72D16259B25002D7563 /* AFInfiniteScrollView.m */; };
 		FAE8D73E16286C0E002D7563 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAE8D73D16286C0E002D7563 /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
@@ -45,8 +44,6 @@
 		FABAE9D016242F0300E8F4AE /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/AFViewController.xib; sourceTree = "<group>"; };
 		FAE8D6F51624321E002D7563 /* AFGridView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFGridView.h; path = AFGridView/AFGridView.h; sourceTree = "<group>"; };
 		FAE8D6F61624321E002D7563 /* AFGridView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFGridView.m; path = AFGridView/AFGridView.m; sourceTree = "<group>"; };
-		FAE8D72C16259B25002D7563 /* AFInfiniteScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFInfiniteScrollView.h; path = AFGridView/AFInfiniteScrollView.h; sourceTree = "<group>"; };
-		FAE8D72D16259B25002D7563 /* AFInfiniteScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AFInfiniteScrollView.m; path = AFGridView/AFInfiniteScrollView.m; sourceTree = "<group>"; };
 		FAE8D73D16286C0E002D7563 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -128,8 +125,6 @@
 				45E21BF416281E2600792EA5 /* AFGridViewCell.m */,
 				FAE8D6F51624321E002D7563 /* AFGridView.h */,
 				FAE8D6F61624321E002D7563 /* AFGridView.m */,
-				FAE8D72C16259B25002D7563 /* AFInfiniteScrollView.h */,
-				FAE8D72D16259B25002D7563 /* AFInfiniteScrollView.m */,
 			);
 			name = AFGridView;
 			sourceTree = "<group>";
@@ -205,7 +200,6 @@
 				FABAE9C516242F0300E8F4AE /* AFAppDelegate.m in Sources */,
 				FABAE9CE16242F0300E8F4AE /* AFViewController.m in Sources */,
 				FAE8D6F71624321E002D7563 /* AFGridView.m in Sources */,
-				FAE8D72E16259B25002D7563 /* AFInfiniteScrollView.m in Sources */,
 				45E21BF516281E2600792EA5 /* AFGridViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
