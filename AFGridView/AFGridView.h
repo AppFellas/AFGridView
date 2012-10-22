@@ -6,8 +6,6 @@
 //  Copyright (c) 2012 AppFellas. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
-
 @class AFGridViewCell;
 @protocol AFGridViewDataSource;
 @protocol AFGridViewDelegate;
@@ -18,7 +16,6 @@
 @property (nonatomic, weak) id<AFGridViewDelegate> gridDelegate;
 
 - (void)reloadGridView;
-
 @end
 
 
@@ -26,15 +23,15 @@
 
 - (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView;
 - (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView;
+- (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView;
 
 - (AFGridViewCell *)gridView:(AFGridView *)gridView
           viewForCellAtIndex:(NSInteger)index;
 
+@optional
 - (void)gridView:(AFGridView *)gridView
    configureCell:(AFGridViewCell *)cell
        withIndex:(NSInteger)index;
-
-- (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView;
 
 @end
 
