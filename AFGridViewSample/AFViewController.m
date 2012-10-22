@@ -8,11 +8,10 @@
 
 #import "AFViewController.h"
 #import "AFGridView.h"
-#import "AFInfiniteScrollView.h"
 #import "AFGridViewCell.h"
 #import <QuartzCore/QuartzCore.h>
 
-@interface AFViewController()<AFInfiniteScrollViewDataSource, AFGridViewDataSource, AFGridViewCellTapDelegate>
+@interface AFViewController()<AFGridViewDataSource, AFGridViewDelegate>
 
 @property (strong, nonatomic) AFGridView *gridView;
 //delete after testing
@@ -36,6 +35,7 @@
     self.gridView = [AFGridView new];
     _gridView.frame = self.view.bounds;
     _gridView.dataSource = self;
+    _gridView.gridDelegate = self;
     [self.view addSubview:_gridView];
     [_gridView reloadGridView];
      
@@ -56,35 +56,6 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
     return UIInterfaceOrientationIsLandscape(toInterfaceOrientation);
-}
-
-#pragma mark - AFInfiniteScrollViewDataSource methods
-
-- (UIView *)infiniteScrollView:(AFInfiniteScrollView *)infiniteScrollView viewWithIndex:(NSInteger)index
-{
-    UILabel *label = [[UILabel alloc] init];
-    label.tag = index;
-    label.backgroundColor = [UIColor redColor];
-    [label setNumberOfLines:3];
-    [label setText:[NSString stringWithFormat:@"%@", _array[index]]];
-    [label setFont:[UIFont boldSystemFontOfSize:30]];
-    
-    return label;
-}
-
-- (CGSize)sizeForCellInScrollView:(AFInfiniteScrollView *)infiniteScrollView
-{
-    return CGSizeMake(190, 80);
-}
-
-- (CGFloat)cellPaddingInScrollView:(AFInfiniteScrollView *)infiniteScrollView
-{
-    return 2;
-}
-
-- (NSInteger)numberOfCellsInScrollView:(AFInfiniteScrollView *)infiniteScrollView
-{
-    return _array.count;
 }
 
 #pragma mark - AFGridViewDataSource methods
@@ -121,17 +92,16 @@
           viewForCellAtIndex:(NSInteger)index
 {
     AFGridViewCell *cell = [[AFGridViewCell alloc] init];
-    cell.tapDelegate = self;
     [self gridView:gridView configureCell:cell withIndex:index];
     return cell;
 }
 
-#pragma mark - AFGridViewCellTapDelegate methods
+#pragma mark - AFGridViewDelegate methods
 
-- (void)gridViewCellDidTap:(AFGridViewCell *)cell
+- (void)gridView:(AFGridView *)gridView didSelectCellAtIndex:(NSInteger)index
 {
     [[[UIAlertView alloc] initWithTitle:@"Message"
-                                message:[NSString stringWithFormat:@"%d tapped.", cell.tag + 1]
+                                message:[NSString stringWithFormat:@"%d tapped.", index + 1]
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
