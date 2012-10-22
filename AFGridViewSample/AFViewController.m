@@ -98,10 +98,10 @@
 
 #pragma mark - AFGridViewDelegate methods
 
-- (void)gridView:(AFGridView *)gridView didSelectCellAtIndex:(NSInteger)index
+- (void)gridView:(AFGridView *)gridView didSelectCell:(AFGridViewCell *)cell
 {
     [[[UIAlertView alloc] initWithTitle:@"Message"
-                                message:[NSString stringWithFormat:@"%d tapped.", index + 1]
+                                message:[NSString stringWithFormat:@"%d tapped.", cell.tag + 1]
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];
