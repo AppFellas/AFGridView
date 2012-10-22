@@ -38,19 +38,6 @@
     _gridView.gridDelegate = self;
     [self.view addSubview:_gridView];
     [_gridView reloadGridView];
-     
-    /*
-    AFInfiniteScrollView *infiniteScrollView = [[AFInfiniteScrollView alloc] initWithFrame:self.view.bounds];
-    infiniteScrollView.dataSource = self;
-    infiniteScrollView.scrollDirection = AFScrollViewDirectionHorizontal;
-    [self.view addSubview:infiniteScrollView];
-     */
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
