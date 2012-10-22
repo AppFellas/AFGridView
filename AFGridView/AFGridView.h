@@ -37,5 +37,5 @@
 
 @protocol AFGridViewDelegate <NSObject>
 @optional
-- (void)gridView:(AFGridView *)gridView didSelectCellAtIndex:(NSInteger)index;
+- (void)gridView:(AFGridView *)gridView didSelectCell:(AFGridViewCell *)cell;
 @end

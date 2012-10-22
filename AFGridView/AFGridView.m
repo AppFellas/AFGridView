@@ -63,7 +63,7 @@
     CGPoint point = [gestureRecognizer locationInView:self];
     AFGridViewCell *cell = [self cellWithPoint:point];
     [self.gridDelegate gridView:self
-           didSelectCellAtIndex:cell.tag];
+                  didSelectCell:cell];
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
