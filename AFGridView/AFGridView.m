@@ -219,7 +219,6 @@ CGPoint prevPoint;
             }
             
             [self.possibleCellsSet minusSet:fixedCellsSet];
-            NSLog(@"%@", self.possibleCellsSet);
         }
     }
     
