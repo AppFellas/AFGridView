@@ -12,10 +12,10 @@
 @protocol AFGridViewDataSource;
 @protocol AFGridViewDelegate;
 
-@interface AFGridView : UIView
+@interface AFGridView : UIScrollView
 
 @property (nonatomic, weak) id<AFGridViewDataSource> dataSource;
-@property (nonatomic, weak) id<AFGridViewDelegate> delegate;
+@property (nonatomic, weak) id<AFGridViewDelegate> gridDelegate;
 
 - (void)reloadGridView;
 
