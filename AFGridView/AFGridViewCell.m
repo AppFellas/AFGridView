@@ -23,8 +23,6 @@
     self = [super init];
     if (self) {
         [self setupCell];
-        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAction)];
-        [self addGestureRecognizer:tapRecognizer];
     }
     return self;
 }
@@ -34,6 +32,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self setupCell];
+        self.userInteractionEnabled = NO;
     }
     return self;
 }
@@ -42,90 +41,6 @@
 {
     self.textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     [self addSubview:_textLabel];
-}
-
-#pragma mark - Handling touches
-
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    if (!_delegate) return;
-    
-    if (touches.count == 1) {
-        self.initialPosition = [((UITouch *)touches.anyObject) locationInView:self];
-    } else {
-        self.initialPosition = CGPointZero;
-    }
-}
-
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    if (!_delegate) return;
-    
-    UITouch *touch = [touches anyObject];
-    
-    CGPoint location = [touch locationInView:self];
-    CGPoint prevLocation = self.initialPosition;
-    if (location.x < 0 ||
-        location.y < 0 ||
-        location.x > self.bounds.size.width ||
-        location.y > self.bounds.size.height) {
-        return;
-    }
-    CGFloat dx = abs(location.x - prevLocation.x);
-    CGFloat dy = abs(location.y - prevLocation.y);
-        
-    if ((dx < MIN_DISTANCE) && (dy < MIN_DISTANCE)) return;
-    
-    self.initialPosition = location;
-    
-    if (dx > dy) {
-        if (location.x - prevLocation.x > 0) {
-            if (self.delegate != nil) {
-                [self.delegate gridViewCell:self willMoveToDirection:moveRightDirection];
-            }
-        } else {
-            if (self.delegate != nil) {
-                [self.delegate gridViewCell:self willMoveToDirection:moveLeftDirection];
-            }
-        }
-    } else {
-        
-        if (location.y - prevLocation.y > 0) {
-            if (self.delegate != nil) {
-                [self.delegate gridViewCell:self willMoveToDirection:moveDownDirection];
-            }
-        } else {
-            if (self.delegate != nil) {
-                [self.delegate gridViewCell:self willMoveToDirection:moveUpDirection];
-            }
-        }
-    }
-
-    if (self.scrollView) {
-        CGPoint prevCellLocation = [touch previousLocationInView:self];
-    
-        CGFloat xOffsetDiv = location.x - prevCellLocation.x;
-        CGFloat yOffsetDiv = location.y - prevCellLocation.y;
-        
-        CGPoint contentOffset = self.scrollView.contentOffset;
-        contentOffset.x += xOffsetDiv;
-        
-        //self.scrollView.contentOffset = contentOffset;
-        
-        NSDictionary *ui = @{@"xOffset" : [NSNumber numberWithFloat:xOffsetDiv],
-        @"yOffset" : [NSNumber numberWithFloat:yOffsetDiv]};
-        
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"scroll.event"
-                                                            object:nil
-                                                          userInfo:ui];
-    }
-}
-
-- (void)tapAction
-{
-    if (self.tapDelegate && [_tapDelegate respondsToSelector:@selector(gridViewCellDidTap:)]) {
-        [_tapDelegate gridViewCellDidTap:self];
-    }
 }
 
 #pragma mark - Layouting subviews
