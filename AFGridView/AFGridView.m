@@ -282,7 +282,7 @@ CGPoint prevPoint;
 - (void)recenterCells
 {
     if ([self.scrollingCells count] > 2) {
-        CGPoint adjust;
+        CGPoint adjust = CGPointZero;
         UIView *cell1 = [self.scrollingCells objectAtIndex:0];
         UIView *cell2 = [self.scrollingCells objectAtIndex:1];
         
