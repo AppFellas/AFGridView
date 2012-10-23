@@ -29,6 +29,8 @@
 @property (nonatomic, strong) NSMutableArray *scrollingCells;
 @property (nonatomic, strong) NSMutableSet *possibleCellsSet;
 
+@property (nonatomic, strong) NSMutableArray *recycledCells;
+
 @end
 
 @implementation AFGridView
@@ -39,6 +41,7 @@
     if (self) {
         // Initialization code
         self.fixedCells = [NSMutableArray new];
+        self.recycledCells = [NSMutableArray new];
         
         self.moveDirection = moveNoneDirection;
         
@@ -108,6 +111,17 @@
     return cellFrame;
 }
 
+- (AFGridViewCell *)dequeCell
+{
+    AFGridViewCell *cell = [self.recycledCells lastObject];
+    if (!cell) {
+        cell = [[AFGridViewCell alloc] init];
+    } else {
+        [self.recycledCells removeObject:cell];
+    }
+    return cell;
+}
+
 - (void)reloadGridView
 {
     for (UIView *v in [self.cellContainerView subviews]) {
@@ -120,7 +134,10 @@
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             NSInteger index = i * columns + j;
-            AFGridViewCell *cell = [self.dataSource gridView:self viewForCellAtIndex:index];
+            AFGridViewCell *cell = [self dequeCell];//[self.dataSource gridView:self viewForCellAtIndex:index];
+            [self.dataSource gridView:self
+                        configureCell:cell
+                            withIndex:index];
             [self.fixedCells addObject:cell];
             cell.tag = index;
             cell.frame = [self frameForCellWithRow:i column:j];
@@ -349,12 +366,39 @@ CGPoint prevPoint;
 
 #pragma mark - Tiling methods
 
+- (NSMutableSet *)detectPossibleCells
+{
+    NSMutableSet *allIndexes = [NSMutableSet set];
+    NSInteger count = [self.dataSource numberOfObjectsInGridView:self];
+    for (int i = 0; i < count; i++) {
+        [allIndexes addObject:[NSNumber numberWithInt:i]];
+    }
+    
+    NSMutableSet *visibleIndexes = [NSMutableSet set];
+    
+    for (AFGridViewCell *cell in self.scrollingCells) {
+        [visibleIndexes addObject:[NSNumber numberWithInt:cell.tag]];
+    }
+    
+    for (AFGridViewCell *cell in self.fixedCells) {
+        [visibleIndexes addObject:[NSNumber numberWithInt:cell.tag]];
+    }
+    
+    [allIndexes minusSet:visibleIndexes];
+    
+    NSLog(@"%@", visibleIndexes);
+    NSLog(@"%@", allIndexes);
+    
+    return allIndexes;
+}
+
 - (AFGridViewCell *)getNextCell
 {
-    NSNumber *index = [self.possibleCellsSet anyObject];
-    [self.possibleCellsSet removeObject:index];
+//    NSNumber *index = [self.possibleCellsSet anyObject];
+//    [self.possibleCellsSet removeObject:index];
+    NSNumber *index = [[self detectPossibleCells] anyObject];
     
-    AFGridViewCell *newCell = [AFGridViewCell new];
+    AFGridViewCell *newCell = [self dequeCell];
     [self.dataSource gridView:self
                 configureCell:newCell
                     withIndex:index.integerValue];
@@ -396,23 +440,43 @@ static BOOL blockRemoving;
 
 - (void)tileCellsFromMinX:(CGFloat)minimumVisibleX toMaxX:(CGFloat)maximumVisibleX
 {
+    UIView *lastCell;
+    UIView *firstCell;
+    
     if ([self.scrollingCells count] == 0) {
         [self placeNewCellOnRight:minimumVisibleX];
     }
     
-    UIView *lastCell = [self.scrollingCells lastObject];
+    lastCell = [self.scrollingCells lastObject];
     CGFloat rightEdge = CGRectGetMaxX([lastCell frame]);
-    while (rightEdge < maximumVisibleX) {
+    while (rightEdge + CELL_OFFSET < maximumVisibleX) {
         rightEdge = [self placeNewCellOnRight:rightEdge];
     }
     
-    UIView *firstCell = [self.scrollingCells objectAtIndex:0];
+    firstCell = [self.scrollingCells objectAtIndex:0];
     CGFloat leftEdge = CGRectGetMinX([firstCell frame]);
-    while (leftEdge > minimumVisibleX) {
+    while (leftEdge - CELL_OFFSET > minimumVisibleX) {
         leftEdge = [self placeNewCellOnLeft:leftEdge];
     }
     
     if (!blockRemoving) {
+        NSMutableArray *cellsToRemove = [NSMutableArray new];
+        for (AFGridViewCell *cell in self.scrollingCells) {
+            CGRect visibleRect;
+            visibleRect.origin = self.contentOffset;
+            visibleRect.size = self.bounds.size;
+            if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
+                [cellsToRemove addObject:cell];
+            }
+        }
+        
+        for (AFGridViewCell *cell in cellsToRemove) {
+            [self.scrollingCells removeObject:cell];
+            [cell removeFromSuperview];
+            [self.recycledCells addObject:cell];
+        }
+        
+        /*
         lastCell = [self.scrollingCells lastObject];
         while ([lastCell frame].origin.x > maximumVisibleX) {
             [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
@@ -421,14 +485,16 @@ static BOOL blockRemoving;
             lastCell = [self.scrollingCells lastObject];
         }
         
-        firstCell = [self.scrollingCells objectAtIndex:0];
-        while (CGRectGetMaxX([firstCell frame]) < minimumVisibleX) {
+        firstCell =  (self.scrollingCells.count) ? [self.scrollingCells objectAtIndex:0] : nil;
+        while (firstCell && (CGRectGetMaxX([firstCell frame]) < minimumVisibleX)) {
             [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
             [firstCell removeFromSuperview];
             [self.scrollingCells removeObjectAtIndex:0];
             firstCell = [self.scrollingCells objectAtIndex:0];
         }
+         */
     }
+
 }
 
 #pragma mark Vertical scrolling
@@ -473,17 +539,34 @@ static BOOL blockRemoving;
     
     UIView *lastCell = [self.scrollingCells lastObject];
     CGFloat bottomEdge = CGRectGetMaxY([lastCell frame]);
-    while (bottomEdge < maximumVisibleY) {
+    while (bottomEdge + CELL_OFFSET < maximumVisibleY) {
         bottomEdge = [self placeNewCellOnBottom:bottomEdge];
     }
     
     UIView *firstCell = [self.scrollingCells objectAtIndex:0];
     CGFloat topEdge = CGRectGetMinY([firstCell frame]);
-    while (topEdge > minimumVisibleY) {
+    while (topEdge - CELL_OFFSET > minimumVisibleY) {
         topEdge = [self placeNewCellOnTop:topEdge];
     }
     
     if (!blockRemoving) {
+        NSMutableArray *cellsToRemove = [NSMutableArray new];
+        for (AFGridViewCell *cell in self.scrollingCells) {
+            CGRect visibleRect;
+            visibleRect.origin = self.contentOffset;
+            visibleRect.size = self.bounds.size;
+            if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
+                [cellsToRemove addObject:cell];
+            }
+        }
+        
+        for (AFGridViewCell *cell in cellsToRemove) {
+            [self.scrollingCells removeObject:cell];
+            [cell removeFromSuperview];
+            [self.recycledCells addObject:cell];
+        }
+        
+        /*
         lastCell = [self.scrollingCells lastObject];
         while ([lastCell frame].origin.y > maximumVisibleY) {
             [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
@@ -499,6 +582,7 @@ static BOOL blockRemoving;
             [self.scrollingCells removeObjectAtIndex:0];
             firstCell = [self.scrollingCells objectAtIndex:0];
         }
+         */
     }
 }
 
