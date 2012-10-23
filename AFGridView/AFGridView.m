@@ -47,7 +47,7 @@
         
         self.contentSize = CGSizeMake(FAKE_LENGTH, FAKE_LENGTH);
         self.cellContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
-        _cellContainerView.backgroundColor = [UIColor greenColor];
+        _cellContainerView.backgroundColor = [UIColor clearColor];
         [self addSubview:_cellContainerView];
         
         self.showsHorizontalScrollIndicator = NO;
@@ -385,9 +385,6 @@ CGPoint prevPoint;
     }
     
     [allIndexes minusSet:visibleIndexes];
-    
-    NSLog(@"%@", visibleIndexes);
-    NSLog(@"%@", allIndexes);
     
     return allIndexes;
 }
