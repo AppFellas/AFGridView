@@ -40,25 +40,38 @@
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
-        self.fixedCells = [NSMutableArray new];
-        self.recycledCells = [NSMutableArray new];
-        
-        self.moveDirection = moveNoneDirection;
-        
-        self.contentSize = CGSizeMake(FAKE_LENGTH, FAKE_LENGTH);
-        self.cellContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
-        _cellContainerView.backgroundColor = [UIColor clearColor];
-        [self addSubview:_cellContainerView];
-        
-        self.showsHorizontalScrollIndicator = NO;
-        self.showsVerticalScrollIndicator = NO;
-        
-        UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                                                        action:@selector(tapAction:)];
-        [self addGestureRecognizer:tapRecognizer];
-        self.delegate = self;
+        [self setupGridView];
     }
     return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        [self setupGridView];
+    }
+    return self;
+}
+
+- (void)setupGridView
+{
+    self.fixedCells = [NSMutableArray new];
+    self.recycledCells = [NSMutableArray new];
+    
+    self.moveDirection = moveNoneDirection;
+    
+    self.contentSize = CGSizeMake(FAKE_LENGTH, FAKE_LENGTH);
+    self.cellContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
+    [self addSubview:_cellContainerView];
+    
+    self.showsHorizontalScrollIndicator = YES;
+    self.showsVerticalScrollIndicator = YES;
+    
+    UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
+                                                                                    action:@selector(tapAction:)];
+    [self addGestureRecognizer:tapRecognizer];
+    self.delegate = self;
 }
 
 - (void)tapAction:(UITapGestureRecognizer *)gestureRecognizer
@@ -94,7 +107,7 @@
 {
     NSInteger rowsCount = [self.dataSource numberOfRowsInGridView:self];
     NSInteger columnsCount = [self.dataSource numberOfColumnsInGridView:self];
-
+    
     return CGSizeMake((int)((self.bounds.size.width - SIDE_OFFSET * 2 - (CELL_OFFSET * (columnsCount - 1))) / columnsCount),
                       (int)((self.bounds.size.height - SIDE_OFFSET * 2 - (CELL_OFFSET * (rowsCount - 1))) / rowsCount));
 }
@@ -102,7 +115,7 @@
 - (CGRect)frameForCellWithRow:(NSInteger)row column:(NSInteger)column
 {
     CGSize cellSize = [self sizeForCell];
-
+    
     CGRect cellFrame = CGRectMake(SIDE_OFFSET + column * CELL_OFFSET + cellSize.width * column,
                                   SIDE_OFFSET + row * CELL_OFFSET + cellSize.height * row,
                                   cellSize.width,
@@ -171,7 +184,7 @@
 }
 
 - (AFGridViewCell *)cellWithPoint:(CGPoint)touchPoint
-{    
+{
     for (AFGridViewCell *cell in self.fixedCells) {
         CGPoint point = [cell convertPoint:touchPoint fromView:self];
         BOOL isInside = [cell pointInside:point withEvent:nil];
@@ -243,7 +256,7 @@ CGPoint prevPoint;
     
     CGFloat dx = self.contentOffset.x - prevPoint.x;
     CGFloat dy = self.contentOffset.y - prevPoint.y;
-
+    
     for (AFGridViewCell *cell in self.fixedCells) {
         CGRect cellFrame = cell.frame;
         cellFrame.origin.x += dx;
@@ -339,7 +352,7 @@ CGPoint prevPoint;
                              [self layoutSubviews];
                          }];
     }
-
+    
 }
 
 - (void)resetHitValues
@@ -391,8 +404,8 @@ CGPoint prevPoint;
 
 - (AFGridViewCell *)getNextCell
 {
-//    NSNumber *index = [self.possibleCellsSet anyObject];
-//    [self.possibleCellsSet removeObject:index];
+    //    NSNumber *index = [self.possibleCellsSet anyObject];
+    //    [self.possibleCellsSet removeObject:index];
     NSNumber *index = [[self detectPossibleCells] anyObject];
     
     AFGridViewCell *newCell = [self dequeCell];
@@ -474,24 +487,24 @@ static BOOL blockRemoving;
         }
         
         /*
-        lastCell = [self.scrollingCells lastObject];
-        while ([lastCell frame].origin.x > maximumVisibleX) {
-            [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
-            [lastCell removeFromSuperview];
-            [self.scrollingCells removeLastObject];
-            lastCell = [self.scrollingCells lastObject];
-        }
-        
-        firstCell =  (self.scrollingCells.count) ? [self.scrollingCells objectAtIndex:0] : nil;
-        while (firstCell && (CGRectGetMaxX([firstCell frame]) < minimumVisibleX)) {
-            [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
-            [firstCell removeFromSuperview];
-            [self.scrollingCells removeObjectAtIndex:0];
-            firstCell = [self.scrollingCells objectAtIndex:0];
-        }
+         lastCell = [self.scrollingCells lastObject];
+         while ([lastCell frame].origin.x > maximumVisibleX) {
+         [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
+         [lastCell removeFromSuperview];
+         [self.scrollingCells removeLastObject];
+         lastCell = [self.scrollingCells lastObject];
+         }
+         
+         firstCell =  (self.scrollingCells.count) ? [self.scrollingCells objectAtIndex:0] : nil;
+         while (firstCell && (CGRectGetMaxX([firstCell frame]) < minimumVisibleX)) {
+         [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
+         [firstCell removeFromSuperview];
+         [self.scrollingCells removeObjectAtIndex:0];
+         firstCell = [self.scrollingCells objectAtIndex:0];
+         }
          */
     }
-
+    
 }
 
 #pragma mark Vertical scrolling
@@ -564,21 +577,21 @@ static BOOL blockRemoving;
         }
         
         /*
-        lastCell = [self.scrollingCells lastObject];
-        while ([lastCell frame].origin.y > maximumVisibleY) {
-            [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
-            [lastCell removeFromSuperview];
-            [self.scrollingCells removeLastObject];
-            lastCell = [self.scrollingCells lastObject];
-        }
-        
-        firstCell = [self.scrollingCells objectAtIndex:0];
-        while (CGRectGetMaxY([firstCell frame]) < minimumVisibleY) {
-            [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
-            [firstCell removeFromSuperview];
-            [self.scrollingCells removeObjectAtIndex:0];
-            firstCell = [self.scrollingCells objectAtIndex:0];
-        }
+         lastCell = [self.scrollingCells lastObject];
+         while ([lastCell frame].origin.y > maximumVisibleY) {
+         [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
+         [lastCell removeFromSuperview];
+         [self.scrollingCells removeLastObject];
+         lastCell = [self.scrollingCells lastObject];
+         }
+         
+         firstCell = [self.scrollingCells objectAtIndex:0];
+         while (CGRectGetMaxY([firstCell frame]) < minimumVisibleY) {
+         [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
+         [firstCell removeFromSuperview];
+         [self.scrollingCells removeObjectAtIndex:0];
+         firstCell = [self.scrollingCells objectAtIndex:0];
+         }
          */
     }
 }

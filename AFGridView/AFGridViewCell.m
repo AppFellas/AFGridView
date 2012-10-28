@@ -39,7 +39,11 @@
 
 - (void)setupCell
 {
+    self.clipsToBounds = YES;
+    self.imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    [self addSubview:_imageView];
     self.textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    self.textLabel.backgroundColor = [UIColor clearColor];
     [self addSubview:_textLabel];
 }
 
@@ -49,6 +53,7 @@
 {
     [super layoutSubviews];
     self.textLabel.frame = self.bounds;
+    self.imageView.frame = self.bounds;
 }
 
 

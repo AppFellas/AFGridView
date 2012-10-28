@@ -21,5 +21,6 @@ typedef enum {
 @interface AFGridViewCell : UIView
 @property (assign, nonatomic) id<AFGridViewCellTapDelegate> tapDelegate;
 @property (strong, nonatomic) UILabel *textLabel;
+@property (strong, nonatomic) UIImageView *imageView;
 @property (weak, nonatomic) UIScrollView *scrollView;
 @end
