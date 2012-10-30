@@ -116,8 +116,8 @@
 {
     CGSize cellSize = [self sizeForCell];
     
-    CGRect cellFrame = CGRectMake(SIDE_OFFSET + column * CELL_OFFSET + cellSize.width * column,
-                                  SIDE_OFFSET + row * CELL_OFFSET + cellSize.height * row,
+    CGRect cellFrame = CGRectMake(SIDE_OFFSET + column * CELL_OFFSET + cellSize.width * column + self.contentOffset.x,
+                                  SIDE_OFFSET + row * CELL_OFFSET + cellSize.height * row + self.contentOffset.y,
                                   cellSize.width,
                                   cellSize.height);
     
