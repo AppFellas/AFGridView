@@ -482,8 +482,8 @@ static BOOL blockRemoving;
         
         for (AFGridViewCell *cell in cellsToRemove) {
             [self.scrollingCells removeObject:cell];
-            if (_delegate && [_delegate respondsToSelector:@selector(gridView:cellWillDissappear:)]) {
-                [_delegate gridView:self
+            if (_gridDelegate && [_gridDelegate respondsToSelector:@selector(gridView:cellWillDissappear:)]) {
+                [_gridDelegate gridView:self
                  cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
@@ -576,8 +576,8 @@ static BOOL blockRemoving;
         
         for (AFGridViewCell *cell in cellsToRemove) {
             [self.scrollingCells removeObject:cell];
-            if (_delegate && [_delegate respondsToSelector:@selector(gridView:cellWillDissappear:)]) {
-                [_delegate gridView:self
+            if (_gridDelegate && [_gridDelegate respondsToSelector:@selector(gridView:cellWillDissappear:)]) {
+                [_gridDelegate gridView:self
                  cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
