@@ -38,4 +38,5 @@
 @protocol AFGridViewDelegate <NSObject>
 @optional
 - (void)gridView:(AFGridView *)gridView didSelectCell:(AFGridViewCell *)cell;
+- (void)gridView:(AFGridView *)gridView cellWillDissappear:(AFGridViewCell *)cell;
 @end
