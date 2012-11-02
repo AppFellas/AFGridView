@@ -65,8 +65,8 @@
     self.cellContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
     [self addSubview:_cellContainerView];
     
-    self.showsHorizontalScrollIndicator = YES;
-    self.showsVerticalScrollIndicator = YES;
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
     
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                                     action:@selector(tapAction:)];
@@ -378,11 +378,22 @@ CGPoint prevPoint;
     [self resetHitValues];
 }
 
+- (void)killScroll
+{
+    CGPoint offset = self.contentOffset;
+    [self setContentOffset:offset animated:NO];
+}
+
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
     if (!decelerate) {
         [self recenterCells];
         [self resetHitValues];
+    } else {
+        __weak AFGridView *weakSelf = self;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [weakSelf killScroll];
+        });
     }
 }
 
