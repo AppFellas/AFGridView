@@ -296,6 +296,11 @@ CGPoint prevPoint;
     
     if (distanceFromCenter > (contentWidth / 4.0)) {
         self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
+        for (AFGridViewCell *cell in self.scrollingCells) {
+            CGPoint center = cell.center;
+            center.x += (centerOffsetX - currentOffset.x);
+            cell.center = center;
+        }
     }
     
     CGFloat contentHeight = [self contentSize].height;
@@ -304,6 +309,10 @@ CGPoint prevPoint;
     
     if (distanceFromCenter > (contentHeight / 4.0)) {
         self.contentOffset = CGPointMake(self.contentOffset.x, centerOffsetY);
+        for (AFGridViewCell *cell in self.scrollingCells) {
+            CGPoint center = cell.center;
+            center.y += (centerOffsetY - currentOffset.y);
+        }
     }
 }
 
