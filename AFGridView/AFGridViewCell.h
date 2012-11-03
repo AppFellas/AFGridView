@@ -23,4 +23,5 @@ typedef enum {
 @property (strong, nonatomic) UILabel *textLabel;
 @property (strong, nonatomic) UIImageView *imageView;
 @property (weak, nonatomic) UIScrollView *scrollView;
+@property (assign, nonatomic) NSInteger index;
 @end

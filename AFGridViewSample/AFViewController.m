@@ -28,7 +28,7 @@
     
     self.array = [NSMutableArray array];
     
-    for (int i = 0; i < 30; i++) {
+    for (int i = 0; i < 14; i++) {
         [self.array addObject:[NSString stringWithFormat:@"%d", i + 1]];
     }
     
@@ -66,7 +66,7 @@
    configureCell:(AFGridViewCell *)cell
        withIndex:(NSInteger)index
 {
-    cell.tag = index;
+    cell.index = index;
     cell.backgroundColor = [UIColor redColor];
     [cell.textLabel setText:[NSString stringWithFormat:@"%@", _array[index]]];
     [cell.textLabel setFont:[UIFont boldSystemFontOfSize:30]];

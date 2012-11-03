@@ -21,14 +21,20 @@
 @interface AFGridView()<UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIView *cellContainerView;
+
+//detecting scroll direction
 @property (nonatomic, assign) eAFGridViewMoveDirection moveDirection;
 @property (nonatomic, assign) CGPoint hitPoint;
 @property (nonatomic, assign) CGPoint hitContentOffset;
 
+//cell containers
 @property (nonatomic, strong) NSMutableArray *fixedCells;
 @property (nonatomic, strong) NSMutableArray *scrollingCells;
+
+//container with possible cell indexes
 @property (nonatomic, strong) NSMutableSet *possibleCellsSet;
 
+//recycling cells container
 @property (nonatomic, strong) NSMutableArray *recycledCells;
 
 @end
@@ -56,6 +62,8 @@
 
 - (void)setupGridView
 {
+    self.hitContentOffset = self.hitPoint = CGPointZero;
+    
     self.fixedCells = [NSMutableArray new];
     self.recycledCells = [NSMutableArray new];
     
@@ -65,8 +73,8 @@
     self.cellContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
     [self addSubview:_cellContainerView];
     
-    self.showsHorizontalScrollIndicator = NO;
-    self.showsVerticalScrollIndicator = NO;
+    self.showsHorizontalScrollIndicator = YES;
+    self.showsVerticalScrollIndicator = YES;
     
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                                     action:@selector(tapAction:)];
@@ -78,14 +86,20 @@
 {
     CGPoint point = [gestureRecognizer locationInView:self];
     AFGridViewCell *cell = [self cellWithPoint:point];
-    [self.gridDelegate gridView:self
-                  didSelectCell:cell];
+    
+    if (cell &&
+        self.gridDelegate &&
+        [self.gridDelegate respondsToSelector:@selector(gridView:didSelectCell:)]) {
+        [self.gridDelegate gridView:self
+                      didSelectCell:cell];
+    }
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
     UIView *v = [super hitTest:point withEvent:event];
     
+    //saving initial touch point and content offset
     self.hitContentOffset = self.contentOffset;
     self.hitPoint = point;
     
@@ -141,6 +155,10 @@
         [v removeFromSuperview];
     }
     
+    //self.scrollingCells = [NSMutableArray new];
+    self.fixedCells = [NSMutableArray new];
+    self.possibleCellsSet = [NSMutableSet new];
+    
     NSInteger columns = [self.dataSource numberOfColumnsInGridView:self];
     NSInteger rows = [self.dataSource numberOfRowsInGridView:self];
     
@@ -152,32 +170,45 @@
                         configureCell:cell
                             withIndex:index];
             [self.fixedCells addObject:cell];
-            cell.tag = index;
+            cell.index = index;
             cell.frame = [self frameForCellWithRow:i column:j];
             [self.cellContainerView addSubview:cell];
         }
     }
 }
 
-- (NSMutableArray *)cellsToScrollFromCell:(AFGridViewCell *)cell
+
+//detecting cells to scrol based on point and scroll direction
+
+- (NSMutableArray *)cellsToScrollFromPoint:(CGPoint)fromPoint
                             moveDirection:(eAFGridViewMoveDirection)direction
 {
     NSMutableArray *cellsToScroll = [NSMutableArray new];
     
-    if (AFScrollDirectionVertical(direction)) {
+    if (AFScrollDirectionVertical(direction)) {        
         for (AFGridViewCell *gridCell in self.fixedCells) {
-            if (gridCell.frame.origin.x < cell.center.x &&
-                CGRectGetMaxX(gridCell.frame) > cell.center.x) {
+            if (gridCell.frame.origin.x <= fromPoint.x &&
+                CGRectGetMaxX(gridCell.frame) >= fromPoint.x) {
                 [cellsToScroll addObject:gridCell];
             }
         }
+        
+        [cellsToScroll sortUsingComparator:^NSComparisonResult(AFGridViewCell *cell1, AFGridViewCell *cell2) {
+            if (cell1.frame.origin.y < cell2.frame.origin.y) return NSOrderedAscending;
+            return NSOrderedDescending;
+        }];
+        
     } else {
         for (AFGridViewCell *gridCell in self.fixedCells) {
-            if (gridCell.frame.origin.y < cell.center.y &&
-                CGRectGetMaxY(gridCell.frame) > cell.center.y) {
+            if (gridCell.frame.origin.y <= fromPoint.y &&
+                CGRectGetMaxY(gridCell.frame) > fromPoint.y) {
                 [cellsToScroll addObject:gridCell];
             }
         }
+        [cellsToScroll sortUsingComparator:^NSComparisonResult(AFGridViewCell *cell1, AFGridViewCell *cell2) {
+            if (cell1.frame.origin.x < cell2.frame.origin.x) return NSOrderedAscending;
+            return NSOrderedDescending;
+        }];
     }
     
     return cellsToScroll;
@@ -194,9 +225,9 @@
     return nil;
 }
 
-CGPoint prevPoint;
-
 #pragma mark - Layout views
+
+CGPoint prevPoint;
 
 - (eAFGridViewMoveDirection)directionFromPoint:(CGPoint)fromPoint
                                        toPoint:(CGPoint)toPoint
@@ -228,27 +259,27 @@ CGPoint prevPoint;
                                                               toPoint:self.contentOffset];
         if (direction != moveNoneDirection) {
             self.moveDirection = direction;
-            AFGridViewCell *touchCell = [self cellWithPoint:self.hitPoint];
-            self.scrollingCells = [self cellsToScrollFromCell:touchCell
+            self.scrollingCells = [self cellsToScrollFromPoint:self.hitPoint
                                                 moveDirection:direction];
-            
-            NSMutableSet *fixedCellsSet = [NSMutableSet set];
-            self.possibleCellsSet = [NSMutableSet set];
-            
-            for (AFGridViewCell *cell in self.fixedCells) {
-                [fixedCellsSet addObject:[NSNumber numberWithInt:cell.tag]];
+            if (self.scrollingCells) {
+                NSMutableSet *fixedCellsSet = [NSMutableSet set];
+                self.possibleCellsSet = [NSMutableSet set];
+                
+                for (AFGridViewCell *cell in self.fixedCells) {
+                    [fixedCellsSet addObject:[NSNumber numberWithInt:cell.index]];
+                }
+                
+                NSInteger objectsCount = [self.dataSource numberOfObjectsInGridView:self];
+                for (int i = 0; i < objectsCount; i++) {
+                    [self.possibleCellsSet addObject:[NSNumber numberWithInt:i]];
+                }
+                
+                for (AFGridViewCell *cell in self.scrollingCells) {
+                    [self.fixedCells removeObject:cell];
+                }
+                
+                [self.possibleCellsSet minusSet:fixedCellsSet];
             }
-            
-            NSInteger objectsCount = [self.dataSource numberOfObjectsInGridView:self];
-            for (int i = 0; i < objectsCount; i++) {
-                [self.possibleCellsSet addObject:[NSNumber numberWithInt:i]];
-            }
-            
-            for (AFGridViewCell *cell in self.scrollingCells) {
-                [self.fixedCells removeObject:cell];
-            }
-            
-            [self.possibleCellsSet minusSet:fixedCellsSet];
         }
     }
     
@@ -266,7 +297,7 @@ CGPoint prevPoint;
     
     prevPoint = self.contentOffset;
     
-    if (self.moveDirection == moveNoneDirection) return;
+    if (self.moveDirection == moveNoneDirection || self.scrollingCells == nil) return;
     
     for (AFGridViewCell *cell in self.scrollingCells) {
         CGRect cellFrame = cell.frame;
@@ -294,7 +325,7 @@ CGPoint prevPoint;
     CGFloat centerOffsetX = (contentWidth - [self bounds].size.width) / 2.0;
     CGFloat distanceFromCenter = fabs(currentOffset.x - centerOffsetX);
     
-    if (distanceFromCenter > (contentWidth / 4.0)) {
+    if (AFScrollDirectionHorizontal(self.moveDirection) && (distanceFromCenter > (contentWidth / 4.0))) {
         self.contentOffset = CGPointMake(centerOffsetX, currentOffset.y);
         for (AFGridViewCell *cell in self.scrollingCells) {
             CGPoint center = cell.center;
@@ -307,11 +338,12 @@ CGPoint prevPoint;
     CGFloat centerOffsetY = (contentHeight - [self bounds].size.height) / 2.0;
     distanceFromCenter = fabs(currentOffset.y - centerOffsetY);
     
-    if (distanceFromCenter > (contentHeight / 4.0)) {
+    if (AFScrollDirectionVertical(self.moveDirection) && (distanceFromCenter > (contentHeight / 4.0))) {
         self.contentOffset = CGPointMake(self.contentOffset.x, centerOffsetY);
         for (AFGridViewCell *cell in self.scrollingCells) {
             CGPoint center = cell.center;
             center.y += (centerOffsetY - currentOffset.y);
+            cell.center = center;
         }
     }
 }
@@ -348,9 +380,12 @@ CGPoint prevPoint;
         }
         
         blockRemoving = YES;
+        
+        __weak AFGridView *weakSelf = self;
+        
         [UIView animateWithDuration:0.2
                          animations:^{
-                             for (AFGridViewCell *cell in self.scrollingCells) {
+                             for (AFGridViewCell *cell in weakSelf.scrollingCells) {
                                  CGRect cellFrame = cell.frame;
                                  cellFrame.origin.x += adjust.x;
                                  cellFrame.origin.y += adjust.y;
@@ -358,7 +393,7 @@ CGPoint prevPoint;
                              }
                          } completion:^(BOOL finished) {
                              blockRemoving = NO;
-                             [self layoutSubviews];
+                             [weakSelf resetHitValues];
                          }];
     }
     
@@ -367,15 +402,65 @@ CGPoint prevPoint;
 - (void)resetHitValues
 {
     self.hitPoint = self.hitContentOffset = CGPointZero;
+    
+    NSMutableArray *cellsToRemove = [NSMutableArray new];
+    
+    if (AFScrollDirectionHorizontal(self.moveDirection)) {
+        CGFloat leftEdge = self.contentOffset.x;
+        CGFloat rightEdge = self.contentOffset.x + self.bounds.size.width;
+        
+        for (AFGridViewCell *cell in self.scrollingCells) {
+            if ((CGRectGetMaxX(cell.frame) <= leftEdge) ||
+                (CGRectGetMinX(cell.frame) >= rightEdge)) {
+                [cellsToRemove addObject:cell];
+            }
+        }
+    } else {
+        CGFloat topEdge = self.contentOffset.y;
+        CGFloat bottomEdge = self.contentOffset.y + self.bounds.size.height;
+        
+        for (AFGridViewCell *cell in self.scrollingCells) {
+            if ((CGRectGetMaxY(cell.frame) <= topEdge) ||
+                (CGRectGetMinY(cell.frame) >= bottomEdge)) {
+                [cellsToRemove addObject:cell];
+            }
+        }
+    }
+
+    for (AFGridViewCell *cell in cellsToRemove) {
+        [cell removeFromSuperview];
+        [self.scrollingCells removeObject:cell];
+    }
+//    NSMutableArray *cellsToRemove = [NSMutableArray array];
+//    
+//    for (AFGridViewCell *cell in self.scrollingCells) {
+//        CGRect visibleRect;
+//        visibleRect.origin = self.contentOffset;
+//        visibleRect.size = self.bounds.size;
+//        if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
+//            [cellsToRemove addObject:cell];
+//        }
+//    }
+//    
+//    for (AFGridViewCell *cell in cellsToRemove) {
+//        [cell removeFromSuperview];
+//    }
+    
+    NSLog(@"scrolling count: %d", self.scrollingCells.count);
+    NSLog(@"fixed count: %d", self.fixedCells.count);
+    
     [self.fixedCells addObjectsFromArray:self.scrollingCells];
     self.scrollingCells = nil;
     self.moveDirection = moveNoneDirection;
+    
+    NSLog(@"fixed modified count: %d", self.fixedCells.count);
+    NSLog(@"container subviews count: %d", self.cellContainerView.subviews.count);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     [self recenterCells];
-    [self resetHitValues];
+    //[self resetHitValues];
 }
 
 - (void)killScroll
@@ -388,8 +473,9 @@ CGPoint prevPoint;
 {
     if (!decelerate) {
         [self recenterCells];
-        [self resetHitValues];
-    } else {
+        //[self resetHitValues];
+    }
+    else {
         __weak AFGridView *weakSelf = self;
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             [weakSelf killScroll];
@@ -410,11 +496,11 @@ CGPoint prevPoint;
     NSMutableSet *visibleIndexes = [NSMutableSet set];
     
     for (AFGridViewCell *cell in self.scrollingCells) {
-        [visibleIndexes addObject:[NSNumber numberWithInt:cell.tag]];
+        [visibleIndexes addObject:[NSNumber numberWithInt:cell.index]];
     }
     
     for (AFGridViewCell *cell in self.fixedCells) {
-        [visibleIndexes addObject:[NSNumber numberWithInt:cell.tag]];
+        [visibleIndexes addObject:[NSNumber numberWithInt:cell.index]];
     }
     
     [allIndexes minusSet:visibleIndexes];
@@ -432,7 +518,7 @@ CGPoint prevPoint;
     [self.dataSource gridView:self
                 configureCell:newCell
                     withIndex:index.integerValue];
-    [self addSubview:newCell];
+    [self.cellContainerView addSubview:newCell];
     return newCell;
 }
 
@@ -477,6 +563,10 @@ static BOOL blockRemoving;
         [self placeNewCellOnRight:minimumVisibleX];
     }
     
+//    if (self.scrollingCells.count > ([self.dataSource numberOfColumnsInGridView:self] + 1)) {
+//        NSLog(@"%@", self.scrollingCells);
+//    }
+    
     lastCell = [self.scrollingCells lastObject];
     CGFloat rightEdge = CGRectGetMaxX([lastCell frame]);
     while (rightEdge + CELL_OFFSET < maximumVisibleX) {
@@ -492,11 +582,9 @@ static BOOL blockRemoving;
     if (!blockRemoving) {
         NSMutableArray *cellsToRemove = [NSMutableArray new];
         for (AFGridViewCell *cell in self.scrollingCells) {
-            CGRect visibleRect;
-            visibleRect.origin = self.contentOffset;
-            visibleRect.size = self.bounds.size;
-            if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
-                [cellsToRemove addObject:cell];
+            if ((CGRectGetMaxX(cell.frame) < minimumVisibleX) ||
+                (CGRectGetMinX(cell.frame) > maximumVisibleX)) {
+                    [cellsToRemove addObject:cell];
             }
         }
         
@@ -507,7 +595,7 @@ static BOOL blockRemoving;
                  cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
-            [self.recycledCells addObject:cell];
+            //[self.recycledCells addObject:cell];
         }
         
         /*
@@ -585,14 +673,21 @@ static BOOL blockRemoving;
     
     if (!blockRemoving) {
         NSMutableArray *cellsToRemove = [NSMutableArray new];
+        
         for (AFGridViewCell *cell in self.scrollingCells) {
-            CGRect visibleRect;
-            visibleRect.origin = self.contentOffset;
-            visibleRect.size = self.bounds.size;
-            if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
+            if ((CGRectGetMaxY(cell.frame) < minimumVisibleY) ||
+                (CGRectGetMinY(cell.frame) > maximumVisibleY)) {
                 [cellsToRemove addObject:cell];
             }
         }
+//        for (AFGridViewCell *cell in self.scrollingCells) {
+//            CGRect visibleRect;
+//            visibleRect.origin = self.contentOffset;
+//            visibleRect.size = self.bounds.size;
+//            if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
+//                [cellsToRemove addObject:cell];
+//            }
+//        }
         
         for (AFGridViewCell *cell in cellsToRemove) {
             [self.scrollingCells removeObject:cell];
@@ -601,7 +696,7 @@ static BOOL blockRemoving;
                  cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
-            [self.recycledCells addObject:cell];
+            //[self.recycledCells addObject:cell];
         }
         
         /*
