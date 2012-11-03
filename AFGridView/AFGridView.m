@@ -73,8 +73,8 @@
     self.cellContainerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)];
     [self addSubview:_cellContainerView];
     
-    self.showsHorizontalScrollIndicator = YES;
-    self.showsVerticalScrollIndicator = YES;
+    self.showsHorizontalScrollIndicator = NO;
+    self.showsVerticalScrollIndicator = NO;
     
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self
                                                                                     action:@selector(tapAction:)];
@@ -431,36 +431,15 @@ CGPoint prevPoint;
         [cell removeFromSuperview];
         [self.scrollingCells removeObject:cell];
     }
-//    NSMutableArray *cellsToRemove = [NSMutableArray array];
-//    
-//    for (AFGridViewCell *cell in self.scrollingCells) {
-//        CGRect visibleRect;
-//        visibleRect.origin = self.contentOffset;
-//        visibleRect.size = self.bounds.size;
-//        if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
-//            [cellsToRemove addObject:cell];
-//        }
-//    }
-//    
-//    for (AFGridViewCell *cell in cellsToRemove) {
-//        [cell removeFromSuperview];
-//    }
-    
-    NSLog(@"scrolling count: %d", self.scrollingCells.count);
-    NSLog(@"fixed count: %d", self.fixedCells.count);
     
     [self.fixedCells addObjectsFromArray:self.scrollingCells];
     self.scrollingCells = nil;
     self.moveDirection = moveNoneDirection;
-    
-    NSLog(@"fixed modified count: %d", self.fixedCells.count);
-    NSLog(@"container subviews count: %d", self.cellContainerView.subviews.count);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     [self recenterCells];
-    //[self resetHitValues];
 }
 
 - (void)killScroll
@@ -510,8 +489,6 @@ CGPoint prevPoint;
 
 - (AFGridViewCell *)getNextCell
 {
-    //    NSNumber *index = [self.possibleCellsSet anyObject];
-    //    [self.possibleCellsSet removeObject:index];
     NSNumber *index = [[self detectPossibleCells] anyObject];
     
     AFGridViewCell *newCell = [self dequeCell];
@@ -563,10 +540,6 @@ static BOOL blockRemoving;
         [self placeNewCellOnRight:minimumVisibleX];
     }
     
-//    if (self.scrollingCells.count > ([self.dataSource numberOfColumnsInGridView:self] + 1)) {
-//        NSLog(@"%@", self.scrollingCells);
-//    }
-    
     lastCell = [self.scrollingCells lastObject];
     CGFloat rightEdge = CGRectGetMaxX([lastCell frame]);
     while (rightEdge + CELL_OFFSET < maximumVisibleX) {
@@ -595,26 +568,7 @@ static BOOL blockRemoving;
                  cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
-            //[self.recycledCells addObject:cell];
         }
-        
-        /*
-         lastCell = [self.scrollingCells lastObject];
-         while ([lastCell frame].origin.x > maximumVisibleX) {
-         [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
-         [lastCell removeFromSuperview];
-         [self.scrollingCells removeLastObject];
-         lastCell = [self.scrollingCells lastObject];
-         }
-         
-         firstCell =  (self.scrollingCells.count) ? [self.scrollingCells objectAtIndex:0] : nil;
-         while (firstCell && (CGRectGetMaxX([firstCell frame]) < minimumVisibleX)) {
-         [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
-         [firstCell removeFromSuperview];
-         [self.scrollingCells removeObjectAtIndex:0];
-         firstCell = [self.scrollingCells objectAtIndex:0];
-         }
-         */
     }
     
 }
@@ -680,14 +634,6 @@ static BOOL blockRemoving;
                 [cellsToRemove addObject:cell];
             }
         }
-//        for (AFGridViewCell *cell in self.scrollingCells) {
-//            CGRect visibleRect;
-//            visibleRect.origin = self.contentOffset;
-//            visibleRect.size = self.bounds.size;
-//            if (!CGRectIntersectsRect(visibleRect, cell.frame)) {
-//                [cellsToRemove addObject:cell];
-//            }
-//        }
         
         for (AFGridViewCell *cell in cellsToRemove) {
             [self.scrollingCells removeObject:cell];
@@ -696,26 +642,7 @@ static BOOL blockRemoving;
                  cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
-            //[self.recycledCells addObject:cell];
         }
-        
-        /*
-         lastCell = [self.scrollingCells lastObject];
-         while ([lastCell frame].origin.y > maximumVisibleY) {
-         [self.possibleCellsSet addObject:[NSNumber numberWithInt:lastCell.tag]];
-         [lastCell removeFromSuperview];
-         [self.scrollingCells removeLastObject];
-         lastCell = [self.scrollingCells lastObject];
-         }
-         
-         firstCell = [self.scrollingCells objectAtIndex:0];
-         while (CGRectGetMaxY([firstCell frame]) < minimumVisibleY) {
-         [self.possibleCellsSet addObject:[NSNumber numberWithInt:firstCell.tag]];
-         [firstCell removeFromSuperview];
-         [self.scrollingCells removeObjectAtIndex:0];
-         firstCell = [self.scrollingCells objectAtIndex:0];
-         }
-         */
     }
 }
 
