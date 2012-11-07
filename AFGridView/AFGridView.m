@@ -181,11 +181,11 @@
 //detecting cells to scrol based on point and scroll direction
 
 - (NSMutableArray *)cellsToScrollFromPoint:(CGPoint)fromPoint
-                            moveDirection:(eAFGridViewMoveDirection)direction
+                             moveDirection:(eAFGridViewMoveDirection)direction
 {
     NSMutableArray *cellsToScroll = [NSMutableArray new];
     
-    if (AFScrollDirectionVertical(direction)) {        
+    if (AFScrollDirectionVertical(direction)) {
         for (AFGridViewCell *gridCell in self.fixedCells) {
             if (gridCell.frame.origin.x <= fromPoint.x &&
                 CGRectGetMaxX(gridCell.frame) >= fromPoint.x) {
@@ -260,7 +260,7 @@ CGPoint prevPoint;
         if (direction != moveNoneDirection) {
             self.moveDirection = direction;
             self.scrollingCells = [self cellsToScrollFromPoint:self.hitPoint
-                                                moveDirection:direction];
+                                                 moveDirection:direction];
             if (self.scrollingCells) {
                 NSMutableSet *fixedCellsSet = [NSMutableSet set];
                 self.possibleCellsSet = [NSMutableSet set];
@@ -361,21 +361,17 @@ CGPoint prevPoint;
         
         if (AFScrollDirectionHorizontal(self.moveDirection)) {
             CGFloat xOffset;
-            
-            if (fabs(cell1.frame.origin.x - self.contentOffset.x) < fabs(cell2.frame.origin.x - self.contentOffset.x))
-                xOffset = cell1.frame.origin.x - sideOffset;
-            else
+            if (self.moveDirection == moveLeftDirection)
                 xOffset = cell2.frame.origin.x - sideOffset;
-            
+            else
+                xOffset = cell1.frame.origin.x - sideOffset;
             adjust.x = self.contentOffset.x - xOffset;
         } else {
             CGFloat yOffset;
-            
-            if (fabs(cell1.frame.origin.y - self.contentOffset.y) < fabs(cell2.frame.origin.y - self.contentOffset.y))
-                yOffset = cell1.frame.origin.y - sideOffset;
-            else
+            if (self.moveDirection == moveUpDirection)
                 yOffset = cell2.frame.origin.y - sideOffset;
-            
+            else
+                yOffset = cell1.frame.origin.y - sideOffset;
             adjust.y = self.contentOffset.y - yOffset;
         }
         
@@ -489,12 +485,13 @@ CGPoint prevPoint;
 
 - (AFGridViewCell *)getNextCell
 {
-    NSNumber *index = [[self detectPossibleCells] anyObject];
+    NSArray *possibleIndexes = [[self detectPossibleCells] allObjects];
+    NSInteger index = [possibleIndexes[arc4random() % possibleIndexes.count] intValue];
     
     AFGridViewCell *newCell = [self dequeCell];
     [self.dataSource gridView:self
                 configureCell:newCell
-                    withIndex:index.integerValue];
+                    withIndex:index];
     [self.cellContainerView addSubview:newCell];
     return newCell;
 }
@@ -557,7 +554,7 @@ static BOOL blockRemoving;
         for (AFGridViewCell *cell in self.scrollingCells) {
             if ((CGRectGetMaxX(cell.frame) < minimumVisibleX) ||
                 (CGRectGetMinX(cell.frame) > maximumVisibleX)) {
-                    [cellsToRemove addObject:cell];
+                [cellsToRemove addObject:cell];
             }
         }
         
@@ -565,7 +562,7 @@ static BOOL blockRemoving;
             [self.scrollingCells removeObject:cell];
             if (_gridDelegate && [_gridDelegate respondsToSelector:@selector(gridView:cellWillDissappear:)]) {
                 [_gridDelegate gridView:self
-                 cellWillDissappear:cell];
+                     cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
         }
@@ -639,7 +636,7 @@ static BOOL blockRemoving;
             [self.scrollingCells removeObject:cell];
             if (_gridDelegate && [_gridDelegate respondsToSelector:@selector(gridView:cellWillDissappear:)]) {
                 [_gridDelegate gridView:self
-                 cellWillDissappear:cell];
+                     cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
         }
