@@ -8,12 +8,6 @@
 
 #import "AFGridViewCell.h"
 
-#define MIN_DISTANCE 10
-
-@interface AFGridViewCell ()
-@property (nonatomic, assign) CGPoint initialPosition;
-@end
-
 @implementation AFGridViewCell
 
 #pragma mark - Initializing
