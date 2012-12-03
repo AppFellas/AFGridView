@@ -9,11 +9,9 @@
 #import "AFGridView.h"
 #import "AFGridViewCell.h"
 
-#define SIDE_OFFSET 1
-#define CELL_OFFSET 2
 #define FAKE_LENGTH 5000
 
-#define MIN_DRAG_DISTANCE 5
+#define MIN_DRAG_DISTANCE 10
 
 #define AFScrollDirectionHorizontal(x) (x == moveRightDirection || x == moveLeftDirection)
 #define AFScrollDirectionVertical(x) (x == moveUpDirection || x == moveDownDirection)
@@ -122,16 +120,22 @@
     NSInteger rowsCount = [self.dataSource numberOfRowsInGridView:self];
     NSInteger columnsCount = [self.dataSource numberOfColumnsInGridView:self];
     
-    return CGSizeMake((int)((self.bounds.size.width - SIDE_OFFSET * 2 - (CELL_OFFSET * (columnsCount - 1))) / columnsCount),
-                      (int)((self.bounds.size.height - SIDE_OFFSET * 2 - (CELL_OFFSET * (rowsCount - 1))) / rowsCount));
+    CGFloat sideOffset = [self.dataSource sideOffsetForGridView:self];
+    CGFloat cellMargin = [self.dataSource cellMarginInGridView:self];
+    
+    return CGSizeMake((int)((self.bounds.size.width - sideOffset * 2 - (cellMargin * (columnsCount - 1))) / columnsCount),
+                      (int)((self.bounds.size.height - sideOffset * 2 - (cellMargin * (rowsCount - 1))) / rowsCount));
 }
 
 - (CGRect)frameForCellWithRow:(NSInteger)row column:(NSInteger)column
 {
     CGSize cellSize = [self sizeForCell];
     
-    CGRect cellFrame = CGRectMake(SIDE_OFFSET + column * CELL_OFFSET + cellSize.width * column + self.contentOffset.x,
-                                  SIDE_OFFSET + row * CELL_OFFSET + cellSize.height * row + self.contentOffset.y,
+    CGFloat sideOffset = [self.dataSource sideOffsetForGridView:self];
+    CGFloat cellMargin = [self.dataSource cellMarginInGridView:self];
+    
+    CGRect cellFrame = CGRectMake(sideOffset + column * cellMargin + cellSize.width * column + self.contentOffset.x,
+                                  sideOffset + row * cellMargin + cellSize.height * row + self.contentOffset.y,
                                   cellSize.width,
                                   cellSize.height);
     
@@ -357,7 +361,7 @@ CGPoint prevPoint;
         UIView *cell1 = [self.scrollingCells objectAtIndex:0];
         UIView *cell2 = [self.scrollingCells objectAtIndex:1];
         
-        CGFloat sideOffset = SIDE_OFFSET;
+        CGFloat sideOffset = [self.dataSource sideOffsetForGridView:self];
         
         if (AFScrollDirectionHorizontal(self.moveDirection)) {
             CGFloat xOffset;
@@ -504,7 +508,7 @@ CGPoint prevPoint;
     [self.scrollingCells addObject:cellView]; // add rightmost label at the end of the array
     
     CGRect frame = [cellView frame];
-    frame.origin.x = rightEdge + CELL_OFFSET;
+    frame.origin.x = rightEdge + [self.dataSource cellMarginInGridView:self];
     frame.origin.y = otherCell.frame.origin.y;
     frame.size = otherCell.frame.size;
     [cellView setFrame:frame];
@@ -518,7 +522,7 @@ CGPoint prevPoint;
     [self.scrollingCells insertObject:cellView atIndex:0]; // add leftmost label at the beginning of the array
     
     CGRect frame = [cellView frame];
-    frame.origin.x = leftEdge - otherCell.frame.size.width - CELL_OFFSET;
+    frame.origin.x = leftEdge - otherCell.frame.size.width - [self.dataSource cellMarginInGridView:self];
     frame.origin.y = otherCell.frame.origin.y;
     frame.size = otherCell.frame.size;
     [cellView setFrame:frame];
@@ -533,19 +537,21 @@ static BOOL blockRemoving;
     UIView *lastCell;
     UIView *firstCell;
     
+    CGFloat cellMargin = [self.dataSource cellMarginInGridView:self];
+    
     if ([self.scrollingCells count] == 0) {
         [self placeNewCellOnRight:minimumVisibleX];
     }
     
     lastCell = [self.scrollingCells lastObject];
     CGFloat rightEdge = CGRectGetMaxX([lastCell frame]);
-    while (rightEdge + CELL_OFFSET < maximumVisibleX) {
+    while (rightEdge + cellMargin < maximumVisibleX) {
         rightEdge = [self placeNewCellOnRight:rightEdge];
     }
     
     firstCell = [self.scrollingCells objectAtIndex:0];
     CGFloat leftEdge = CGRectGetMinX([firstCell frame]);
-    while (leftEdge - CELL_OFFSET > minimumVisibleX) {
+    while (leftEdge - cellMargin > minimumVisibleX) {
         leftEdge = [self placeNewCellOnLeft:leftEdge];
     }
     
@@ -581,7 +587,7 @@ static BOOL blockRemoving;
     
     CGRect frame = [cellView frame];
     frame.origin.x = otherCell.frame.origin.x;
-    frame.origin.y = bottomEdge + CELL_OFFSET;
+    frame.origin.y = bottomEdge + [self.dataSource cellMarginInGridView:self];
     frame.size = otherCell.frame.size;
     [cellView setFrame:frame];
     
@@ -598,7 +604,7 @@ static BOOL blockRemoving;
     CGRect frame = [cellView frame];
     frame.size = otherCell.frame.size;
     frame.origin.x = otherCell.frame.origin.x;
-    frame.origin.y = topEdge - frame.size.height - CELL_OFFSET;
+    frame.origin.y = topEdge - frame.size.height - [self.dataSource cellMarginInGridView:self];
     [cellView setFrame:frame];
     
     return CGRectGetMinY(frame);
@@ -610,15 +616,17 @@ static BOOL blockRemoving;
         [self placeNewCellOnBottom:minimumVisibleY];
     }
     
+    CGFloat cellMargin = [self.dataSource cellMarginInGridView:self];
+    
     UIView *lastCell = [self.scrollingCells lastObject];
     CGFloat bottomEdge = CGRectGetMaxY([lastCell frame]);
-    while (bottomEdge + CELL_OFFSET < maximumVisibleY) {
+    while (bottomEdge + cellMargin < maximumVisibleY) {
         bottomEdge = [self placeNewCellOnBottom:bottomEdge];
     }
     
     UIView *firstCell = [self.scrollingCells objectAtIndex:0];
     CGFloat topEdge = CGRectGetMinY([firstCell frame]);
-    while (topEdge - CELL_OFFSET > minimumVisibleY) {
+    while (topEdge - cellMargin > minimumVisibleY) {
         topEdge = [self placeNewCellOnTop:topEdge];
     }
     

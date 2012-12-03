@@ -24,6 +24,8 @@
 - (NSInteger)numberOfRowsInGridView:(AFGridView *)gridView;
 - (NSInteger)numberOfColumnsInGridView:(AFGridView *)gridView;
 - (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView;
+- (CGFloat)sideOffsetForGridView:(AFGridView *)gridView;
+- (CGFloat)cellMarginInGridView:(AFGridView *)gridView;
 
 - (AFGridViewCell *)gridView:(AFGridView *)gridView
           viewForCellAtIndex:(NSInteger)index;

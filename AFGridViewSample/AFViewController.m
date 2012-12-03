@@ -83,6 +83,16 @@
     return cell;
 }
 
+- (CGFloat)cellMarginInGridView:(AFGridView *)gridView
+{
+    return 2;
+}
+
+- (CGFloat)sideOffsetForGridView:(AFGridView *)gridView
+{
+    return 1;
+}
+
 #pragma mark - AFGridViewDelegate methods
 
 - (void)gridView:(AFGridView *)gridView didSelectCell:(AFGridViewCell *)cell
