@@ -16,6 +16,8 @@
 @property (nonatomic, weak) id<AFGridViewDelegate> gridDelegate;
 
 - (void)reloadGridView;
+- (AFGridViewCell *)dequeCell;
+
 @end
 
 

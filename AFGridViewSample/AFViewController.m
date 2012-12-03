@@ -66,7 +66,6 @@
    configureCell:(AFGridViewCell *)cell
        withIndex:(NSInteger)index
 {
-    cell.index = index;
     cell.backgroundColor = [UIColor redColor];
     [cell.textLabel setText:[NSString stringWithFormat:@"%@", _array[index]]];
     [cell.textLabel setFont:[UIFont boldSystemFontOfSize:30]];
@@ -78,7 +77,10 @@
 - (AFGridViewCell *)gridView:(AFGridView *)gridView
           viewForCellAtIndex:(NSInteger)index
 {
-    AFGridViewCell *cell = [[AFGridViewCell alloc] init];
+    AFGridViewCell *cell = [gridView dequeCell];
+    if (!cell) {
+        cell = [AFGridViewCell new];
+    }
     [self gridView:gridView configureCell:cell withIndex:index];
     return cell;
 }
@@ -98,7 +100,7 @@
 - (void)gridView:(AFGridView *)gridView didSelectCell:(AFGridViewCell *)cell
 {
     [[[UIAlertView alloc] initWithTitle:@"Message"
-                                message:[NSString stringWithFormat:@"%d tapped.", cell.tag + 1]
+                                message:[NSString stringWithFormat:@"%d tapped.", cell.index + 1]
                                delegate:nil
                       cancelButtonTitle:@"OK"
                       otherButtonTitles:nil] show];

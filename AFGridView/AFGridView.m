@@ -145,11 +145,7 @@
 - (AFGridViewCell *)dequeCell
 {
     AFGridViewCell *cell = [self.recycledCells lastObject];
-    if (!cell) {
-        cell = [[AFGridViewCell alloc] init];
-    } else {
-        [self.recycledCells removeObject:cell];
-    }
+    if (cell) [self.recycledCells removeObject:cell];
     return cell;
 }
 
@@ -169,18 +165,18 @@
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < columns; j++) {
             NSInteger index = i * columns + j;
-            AFGridViewCell *cell = [self dequeCell];//[self.dataSource gridView:self viewForCellAtIndex:index];
-            [self.dataSource gridView:self
-                        configureCell:cell
-                            withIndex:index];
+            AFGridViewCell *cell = [self.dataSource gridView:self
+                                          viewForCellAtIndex:index];
+            cell.index = index;
             [self.fixedCells addObject:cell];
             cell.index = index;
             cell.frame = [self frameForCellWithRow:i column:j];
             [self.cellContainerView addSubview:cell];
         }
     }
+    
+    [self layoutSubviews];
 }
-
 
 //detecting cells to scrol based on point and scroll direction
 
@@ -491,11 +487,11 @@ CGPoint prevPoint;
 {
     NSArray *possibleIndexes = [[self detectPossibleCells] allObjects];
     NSInteger index = [possibleIndexes[arc4random() % possibleIndexes.count] intValue];
+        
+    AFGridViewCell *newCell = [self.dataSource gridView:self
+                                     viewForCellAtIndex:index];
+    newCell.index = index;
     
-    AFGridViewCell *newCell = [self dequeCell];
-    [self.dataSource gridView:self
-                configureCell:newCell
-                    withIndex:index];
     [self.cellContainerView addSubview:newCell];
     return newCell;
 }
