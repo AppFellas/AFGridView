@@ -35,20 +35,12 @@
 {
     self.clipsToBounds = YES;
     self.imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+    self.imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_imageView];
     self.textLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     self.textLabel.backgroundColor = [UIColor clearColor];
+    self.textLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self addSubview:_textLabel];
 }
-
-#pragma mark - Layouting subviews
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    self.textLabel.frame = self.bounds;
-    self.imageView.frame = self.bounds;
-}
-
 
 @end
