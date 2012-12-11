@@ -287,15 +287,15 @@
 		FABAE9D516242F0300E8F4AE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Mykhailo  Bevz (9XA3M9KC67)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mykhailo  Bevz (9XA3M9KC67)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AFGridViewSample/AFGridViewSample-Prefix.pch";
 				INFOPLIST_FILE = "AFGridViewSample/AFGridViewSample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9FFAC3CE-26C8-4C6B-9F54-EB3445730CE9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9FFAC3CE-26C8-4C6B-9F54-EB3445730CE9";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -303,15 +303,15 @@
 		FABAE9D616242F0300E8F4AE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Mykhailo  Bevz (9XA3M9KC67)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Mykhailo  Bevz (9XA3M9KC67)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "AFGridViewSample/AFGridViewSample-Prefix.pch";
 				INFOPLIST_FILE = "AFGridViewSample/AFGridViewSample-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "9FFAC3CE-26C8-4C6B-9F54-EB3445730CE9";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "9FFAC3CE-26C8-4C6B-9F54-EB3445730CE9";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
