@@ -95,13 +95,14 @@
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+    //saving initial touch point and content offset
     UIView *v = [super hitTest:point withEvent:event];
     
-    //saving initial touch point and content offset
-    self.hitContentOffset = self.contentOffset;
-    self.hitPoint = point;
-    
-    return v;
+    if (!self.scrollingCells) {
+        self.hitContentOffset = self.contentOffset;
+        self.hitPoint = point;
+        return v;
+    } return nil;
 }
 
 - (CGRect)frameForCellWithIndex:(NSInteger)index
@@ -567,6 +568,7 @@ static BOOL blockRemoving;
                      cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
+            [self.recycledCells addObject:cell];
         }
     }
     
@@ -643,6 +645,7 @@ static BOOL blockRemoving;
                      cellWillDissappear:cell];
             }
             [cell removeFromSuperview];
+            [self.recycledCells addObject:cell];
         }
     }
 }
