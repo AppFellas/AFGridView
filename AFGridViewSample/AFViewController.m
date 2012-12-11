@@ -28,7 +28,7 @@
     
     self.array = [NSMutableArray array];
     
-    for (int i = 0; i < 14; i++) {
+    for (int i = 0; i < 20; i++) {
         [self.array addObject:[NSString stringWithFormat:@"%d", i + 1]];
     }
     
