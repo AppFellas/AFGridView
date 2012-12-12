@@ -28,6 +28,7 @@
 - (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView;
 - (CGFloat)sideOffsetForGridView:(AFGridView *)gridView;
 - (CGFloat)cellMarginInGridView:(AFGridView *)gridView;
+- (CGSize)sizeForCellInGridView:(AFGridView *)gridView;
 
 - (AFGridViewCell *)gridView:(AFGridView *)gridView
           viewForCellAtIndex:(NSInteger)index;

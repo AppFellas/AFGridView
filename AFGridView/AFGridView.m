@@ -11,7 +11,7 @@
 
 #define FAKE_LENGTH 5000
 
-#define MIN_DRAG_DISTANCE 10
+#define MIN_DRAG_DISTANCE 20
 
 #define AFScrollDirectionHorizontal(x) (x == moveRightDirection || x == moveLeftDirection)
 #define AFScrollDirectionVertical(x) (x == moveUpDirection || x == moveDownDirection)
@@ -118,14 +118,15 @@
 
 - (CGSize)sizeForCell
 {
-    NSInteger rowsCount = [self.dataSource numberOfRowsInGridView:self];
-    NSInteger columnsCount = [self.dataSource numberOfColumnsInGridView:self];
-    
-    CGFloat sideOffset = [self.dataSource sideOffsetForGridView:self];
-    CGFloat cellMargin = [self.dataSource cellMarginInGridView:self];
-    
-    return CGSizeMake((int)((self.bounds.size.width - sideOffset * 2 - (cellMargin * (columnsCount - 1))) / columnsCount),
-                      (int)((self.bounds.size.height - sideOffset * 2 - (cellMargin * (rowsCount - 1))) / rowsCount));
+//    NSInteger rowsCount = [self.dataSource numberOfRowsInGridView:self];
+//    NSInteger columnsCount = [self.dataSource numberOfColumnsInGridView:self];
+//    
+//    CGFloat sideOffset = [self.dataSource sideOffsetForGridView:self];
+//    CGFloat cellMargin = [self.dataSource cellMarginInGridView:self];
+//    
+//    return CGSizeMake((int)((self.bounds.size.width - sideOffset * 2 - (cellMargin * (columnsCount - 1))) / columnsCount),
+//                      (int)((self.bounds.size.height - sideOffset * 2 - (cellMargin * (rowsCount - 1))) / rowsCount));
+    return [self.dataSource sizeForCellInGridView:self];
 }
 
 - (CGRect)frameForCellWithRow:(NSInteger)row column:(NSInteger)column
@@ -390,6 +391,7 @@ CGPoint prevPoint;
                              }
                          } completion:^(BOOL finished) {
                              blockRemoving = NO;
+                             [weakSelf layoutSubviews];
                              [weakSelf resetHitValues];
                          }];
     }
