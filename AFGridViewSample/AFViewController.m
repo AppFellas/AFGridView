@@ -57,6 +57,11 @@
     return 4;
 }
 
+- (CGSize)sizeForCellInGridView:(AFGridView *)gridView
+{
+    return CGSizeMake(254, 247);
+}
+
 - (NSInteger)numberOfObjectsInGridView:(AFGridView *)gridView
 {
     return _array.count;
