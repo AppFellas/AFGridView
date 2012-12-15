@@ -213,7 +213,7 @@
         }];
     }
     
-    return cellsToScroll;
+    return cellsToScroll.count ? cellsToScroll : nil;
 }
 
 - (AFGridViewCell *)cellWithPoint:(CGPoint)touchPoint

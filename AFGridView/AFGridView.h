@@ -12,6 +12,8 @@
 
 @interface AFGridView : UIScrollView
 
+@property (nonatomic, strong, readonly) NSMutableArray *fixedCells;
+
 @property (nonatomic, weak) id<AFGridViewDataSource> dataSource;
 @property (nonatomic, weak) id<AFGridViewDelegate> gridDelegate;
 
